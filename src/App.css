@@ -1,34 +1,24 @@
-.App {
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
+@keyframes logo-spin {
   from {
     transform: rotate(0deg);
   }
@@ -37,41 +27,36 @@
   }
 }
 
-/* Custom toolbar container */
-#title-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #2f2f2f;
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.custom-dropdown-menu .ant-dropdown-menu {
+  background-color: #292929 !important; /* Set the desired background color */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  color: white; /* Optional: Change text color */
+  width: 200px;
+}
+
+.custom-dropdown-menu .ant-dropdown-menu .ant-dropdown-menu-item {
   color: white;
-  height: 40px;
-  -webkit-app-region: drag; /* Makes the toolbar draggable */
-  padding: 0 10px;
-  user-select: none; /* Prevent text selection */
 }
 
-/* Buttons container */
-#title-bar-buttons {
-  display: flex;
-  align-items: center;
-  -webkit-app-region: no-drag; /* Make buttons non-draggable */
+.custom-dropdown-menu .ant-dropdown-menu .ant-dropdown-menu-item:hover {
+  background-color: #343434;
 }
 
-/* Toolbar buttons */
-#title-bar-buttons button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 14px;
-  margin-left: 10px;
-  cursor: pointer;
-  width: 40px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
+.custom-dropdown-menu .ant-dropdown-menu .ant-dropdown-menu-item-icon svg{
+  width: 16px;
+  height: 16px;
 }
-
-#title-bar-buttons button:hover {
-  background-color: #555;
-}
-
