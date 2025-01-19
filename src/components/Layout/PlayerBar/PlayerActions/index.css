@@ -1,0 +1,42 @@
+
+.action-btn {
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.small-gap {
+  column-gap: 12px;
+
+}
+.action-btn:hover {
+  background: rgb(255,255,255,0.1);
+  border-radius: 5px;
+}
+
+
+.transparent-track-slide .ant-slider-handle::after {
+  box-shadow: none;
+}
+
+.transparent-track-slide .ant-slider-handle:hover {
+  box-shadow: none;
+}
+
+.transparent-track-slide .ant-slider-handle:focus::after {
+  box-shadow: none;
+  outline: none;
+}
+
+.transparent-track-slide .ant-slider-track {
+  background-color: white
+}
+
+.transparent-track-slide .ant-slider-step:hover,
+.transparent-track-slide .ant-slider-track:hover {
+  background-color: white
+}
+
+.transparent-track-slide .ant-slider-step:hover {
+  background-color: white
+}

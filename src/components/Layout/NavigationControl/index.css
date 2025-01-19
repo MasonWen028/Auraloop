@@ -1,0 +1,13 @@
+.navigation-control {
+  position: absolute;
+  left: 30px;
+}
+
+.nav-btn {
+  color: #c5b9b9;
+  cursor: pointer;
+}
+
+.disabled{
+  color: #898989;
+}

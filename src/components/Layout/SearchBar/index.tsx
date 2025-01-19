@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import './index.css';
 
 const SearchBar: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
@@ -24,7 +25,7 @@ const SearchBar: React.FC = () => {
       color: 'white', // Text color
       outline: 'none',
       boxShadow: 'none', // Remove shadow
-      '::placeholder': {
+      'input::placeholder': {
         color: 'rgba(255, 255, 255, 0.5)', // White with transparency
       },
     },
@@ -34,6 +35,7 @@ const SearchBar: React.FC = () => {
     <div style={styles.searchBar}>
       <SearchOutlined style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '18px' }} />
       <Input
+        className='white-placeholder'
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder="Artist, song or album name"

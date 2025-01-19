@@ -9,9 +9,9 @@ const MaxSvg = () => (
 
 type CustomIconComponentProps = GetProps<typeof Icon>;
 
-const HeartIcon = (props: Partial<CustomIconComponentProps>) => {
+const Max = (props: Partial<CustomIconComponentProps>) => {
 
   return <Icon component={MaxSvg} {...props} />
 };
 
-export default HeartIcon;
+export default Max;

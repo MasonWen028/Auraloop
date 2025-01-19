@@ -1,0 +1,85 @@
+
+.black-modal .ant-modal-content {
+  background-color: #414141; /* Set the dark gray background */
+  border-radius: 10px; /* Add rounded corners */
+  color: #E3E3E3; /* Set the text color to white */
+}
+
+.black-modal .ant-modal-header .ant-modal-title {
+  background-color: #414141; /* Match the header background */
+  color: #E3E3E3; /* Ensure header text is white */
+  user-select: none;
+}
+
+.black-modal .ant-modal-footer {
+  background-color: #414141; /* Match the footer background */
+}
+
+.black-modal .ant-modal-body {
+  background-color: #414141; /* Match the body background */
+  color: #E3E3E3; /* Ensure body text is white */
+}
+
+.black-modal .ant-input-suffix{
+  color: #E3E3E3; /* Ensure body text is white */
+  user-select: none;
+}
+
+.dark-input {
+  width: 100%; /* Adjust as needed */
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px; /* Rounded corners */
+  background-color: rgba(74, 74, 74, 1); /* Dark gray background */
+  color: #e3e3e3; /* Light gray text */
+  font-size: 14px;
+  outline: none; /* Remove the default focus outline */
+  transition: box-shadow 0.3s ease;
+}
+
+.dark-input::placeholder {
+  color: #757575; /* Light gray placeholder with opacity */
+}
+
+.dark-input::-ms-input-placeholder { /* Edge 12-18 */
+  color: #757575;
+}
+.dark-input:focus {
+  box-shadow: 0 0 4px rgba(227, 227, 227, 0.8); /* Focus effect */
+  background-color: rgba(74, 74, 74, 0.9); /* Slightly lighter background on focus */
+}
+
+.dark-input input::placeholder {
+  color: #757575; /* Light gray placeholder with opacity */
+}
+
+.warm-btn {
+  background-color: #454545;
+  color: white;
+  border-color: transparent;
+}
+
+.warm-btn:disabled {
+  background-color: #454545;
+  color: #6B6D65;
+  border-color: transparent;
+}
+
+.warm-btn:disabled {
+  background-color: #454545;
+  color: #6B6D65;
+  border-color: transparent;
+}
+
+.warm-btn:not(:disabled):focus,
+.warm-btn:not(:disabled):hover {
+  background-color: #5A5A5A !important;
+  border-color: transparent !important;
+  color: white !important;
+  outline: none !important;
+}
+
+
+
+
+

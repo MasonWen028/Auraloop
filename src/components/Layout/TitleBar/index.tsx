@@ -3,6 +3,8 @@ import ControlBar from "@/components/Layout/ControlBar";
 import ProfileDropdown from "../ProfileDropdown";
 import { Divider } from "antd";
 import SearchBar from "../SearchBar";
+import './index.css';
+import NavigationControl from "../NavigationControl";
 
 const TitleBar : React.FC = () => {
   const styles = {
@@ -11,11 +13,12 @@ const TitleBar : React.FC = () => {
       justifyContent: 'flex-end',
       position: 'absolute' as const,
       right: 0,
+      left: 200,      
       top: 0,
-      width: '100%',
+      width: 'calc(100% - 200px)',
       alignItems: 'center',
       userSelect: 'none',
-      WebkitAppRegion: 'drag', // Enables dragging the window
+      WebkitAppRegion: 'drag',
     },
     noDrag: {
       WebkitAppRegion: 'no-drag', // Excludes this area from dragging
@@ -27,7 +30,8 @@ const TitleBar : React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div className={'back-drop'} style={styles.container}>
+      <NavigationControl />
       <SearchBar />
       <ProfileDropdown/>
       <Divider type="vertical" style={styles.divider}/>

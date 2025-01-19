@@ -1,8 +1,15 @@
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px; /* Default font size */
+  line-height: 1.5; /* Adjust for readability */
+  margin: 0;
+  padding: 0;
+}
+
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  height: 100%;
+  width: 100%;
 }
 
 .logo {
