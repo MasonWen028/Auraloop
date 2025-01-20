@@ -1,0 +1,37 @@
+.play-all-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Spacing between elements */
+  padding: 5px 15px; /* Button padding */
+  background-color: #e0e0e0; /* Light gray background */
+  border: none; /* Remove border */
+  border-radius: 8px; /* Rounded corners */
+  font-size: 14px; /* Font size */
+  color: #000; /* Text color */
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+}
+
+.play-all-button:hover {
+  background-color: #fff; /* Slightly darker gray on hover */
+}
+
+.play-all-button:focus {
+  outline: none;
+}
+
+.play-icon {
+  font-size: 14px; /* Adjust icon size */
+}
+
+.play-text {
+  font-size: 14px;
+}
+
+.play-count {
+  font-size: 12px;
+  font-weight: bold;
+
+}

@@ -1,23 +1,18 @@
 import React, { useState } from "react";
-import {
-  PlayCircleOutlined,
-  PauseCircleOutlined,
-  StepBackwardOutlined,
-  StepForwardOutlined,
-  SoundOutlined,
-  RetweetOutlined,
-  AppstoreOutlined,
-  MoreOutlined,
-  LikeOutlined,
-  DislikeOutlined,
-} from "@ant-design/icons";
-import { Slider } from "antd";
+import { Flex, Row } from 'antd';
 import { useSelector } from "react-redux";
-import PlayerActions from "./PlayerActions";
+import SongActions from "./PlayerActions";
+import PlayActions from "./PlayActions";
+import MusicItem from "./MusicItem";
+import { SongItem } from "@/types/main";
 
 const PlayerBar: React.FC = () => {
   const { playBar } = useSelector((state: any) => state.color.value)
+  const { showSongInfo } = useSelector((state: any) => state.status);
 
+  const [favoriteSongIds, setFavoriteSongIds] = useState<number[]>([]);
+
+  console.log(showSongInfo);
   console.log(playBar);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -41,10 +36,7 @@ const PlayerBar: React.FC = () => {
   const styles = {
     container: {
       height: '80px',
-      display: "flex",
-      justifyContent: 'center',
-      flexDirection: "column" as const,
-      alignItems: "center",
+      
       backgroundColor: playBar,
       padding: "10px 20px",
       color: "white",
@@ -75,48 +67,42 @@ const PlayerBar: React.FC = () => {
     },
   };
 
+  
+
+  const mockSong: SongItem = {
+    id: 1,
+    name: "爱就一个字",
+    artists: "张信哲",
+    album: "Album Name",
+    cover: "https://p1.music.126.net/sixunTcvD_IXeVqxZnpHkA==/109951163452086313.jpg?param=200y200",
+    duration: 240,
+    free: 0,
+    mv: null,
+    type: "song",
+    quality: "Hi-Res",
+  };
+
+  const handleFavoriteToggle = (id: number) => {
+    setFavoriteSongIds((prev) =>
+      prev.includes(id) ? prev.filter((songId) => songId !== id) : [...prev, id]
+    );
+  };
+
   return (
-    <div style={styles.container}>
-      {/* Time and Progress Bar */}
-      {/* <div style={styles.progressBar}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
+    <Row style={styles.container}>
+      {
+        showSongInfo && <MusicItem song={mockSong} isFavorite={favoriteSongIds.includes(mockSong.id)}
+        onFavoriteToggle={handleFavoriteToggle}/>
+      }
+      {
+        !showSongInfo && <div style={{flex: 1}}>
+        
         </div>
-        <Slider
-          min={0}
-          max={duration}
-          value={currentTime}
-          onChange={handleSeek}
-          tooltipVisible={false}
-          trackStyle={{ backgroundColor: "white" }}
-          handleStyle={{ borderColor: "white", backgroundColor: "white" }}
-        />
-      </div> */}
-
-      {/* Playback Controls */}
-      <div style={styles.controls}>
-        {/* Left Controls */}
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <StepBackwardOutlined style={styles.controlButton} />
-          {isPlaying ? (
-            <PauseCircleOutlined
-              style={styles.controlButton}
-              onClick={togglePlayPause}
-            /> 
-          ) : (
-            <PlayCircleOutlined
-              style={styles.controlButton}
-              onClick={togglePlayPause}
-            />
-          )}
-          <StepForwardOutlined style={styles.controlButton} />
-        </div>
-
-        {/* Right Controls */}
-        <PlayerActions id={'testId'}/>
-      </div>
-    </div>
+      }
+      
+      <PlayActions/>
+      <SongActions id={'testId'}/>
+    </Row>
   );
 };
 

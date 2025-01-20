@@ -1,0 +1,101 @@
+/* Container for the entire table */
+.song-table {
+  width: calc(100% + 40px);
+  color: #ccc;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  user-select: none;
+  margin-left: -20px;
+}
+
+/* Header row styling */
+.song-table-header {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: #aaa; /* Text color for the header */
+  height: 40px;
+}
+.holder {
+  width: 20px;
+}
+
+.song-option {
+  width: 60px;
+  justify-content: center;
+}
+
+.song-table-row {
+  position: relative; /* Required for the pseudo-element to position relative to the row */
+  display: flex;
+  align-items: center;
+  height: 40px;
+  z-index: 1; /* Ensure content stays above the pseudo-element */
+  overflow: hidden; /* Prevent pseudo-element overflow */
+}
+
+.song-table-row::before {
+  content: ""; /* Create a background element */
+  position: absolute;
+  top: 0;
+  left: 0; /* Extend 20px to the left */
+  right: 0; /* Extend 20px to the right */
+  height: 100%; /* Cover the full height of the row */
+  background-color: transparent; /* Default background color */
+  transition: background-color 0.3s ease; /* Smooth transition */
+  z-index: -1; /* Place the background below the row content */
+}
+
+.song-table-row:hover::before {
+  background-color: #191919; /* Hover background color */
+}
+
+
+/* Individual column styling */
+.column {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+  align-items: center;
+}
+
+/* Fixed width for the index column */
+.index-column {
+  flex: 0 0 40px; /* Fixed width */
+  text-align: left;
+}
+
+/* Dynamic sizing for title, artist, and album columns */
+.title-column {
+  flex: 3; /* Title gets more space */
+}
+
+.artist-column {
+  flex: 2; /* Moderate space for artist */
+}
+
+.album-column {
+  flex: 2; /* Moderate space for album */
+}
+
+/* Fixed width for the duration column */
+.duration-column {
+  flex: 0 0 60px; /* Fixed width */
+  text-align: center;
+}
+
+/* Responsive design: Adjust for smaller screens */
+@media (max-width: 768px) {
+  .title-column {
+    flex: 2; /* Reduce space for title on small screens */
+  }
+
+  .artist-column,
+  .album-column {
+    flex: 1; /* Reduce space for artist and album */
+  }
+
+  .duration-column {
+    flex: 0 0 50px; /* Smaller width for duration */
+  }
+}

@@ -14,6 +14,7 @@
     "@ant-design/icons": "^5.5.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mojs/core": "^1.7.1",
     "@reduxjs/toolkit": "^2.5.0",
     "antd": "^5.23.1",
     "electron": "^34.0.0",

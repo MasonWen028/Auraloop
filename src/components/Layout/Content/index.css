@@ -1,0 +1,15 @@
+.page-content {
+  padding: 20px;
+  color: rgb(220,220,220);
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+}
+
+/* Hide the scrollbar for Webkit browsers (e.g., Chrome, Edge, Safari) */
+.page-content::-webkit-scrollbar {
+  display: none;
+}
+

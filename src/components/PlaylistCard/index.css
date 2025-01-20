@@ -1,41 +1,44 @@
-.daily-fresh-card {
-  position: relative;
-  width: 200px; /* Adjust size as needed */
-  height: 200px;
-  border-radius: 8px;
+.playlist-card {
+  width: 100%; /* Adjust size as needed */ 
+  border-radius: 4px;
   overflow: hidden;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: #f5f5f5;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: flex-start; /* Prevent extra space */
+  justify-content: flex-start; /* Prevent extra space */
 }
 
-.card-image img {
+.playlist-image {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  aspect-ratio: 1 / 1;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px; /* Rounded corners for the top */
+}
+
+.playlist-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.card-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  padding: 10px;
+.playlist-info {
+  padding: 10px 0;
+  user-select: none;
 }
 
-.card-title {
-  font-size: 20px;
-  margin-bottom: 5px;
-}
-
-.card-subtitle {
-  font-size: 16px;
+.playlist-title {
+  font-size: 14px; /* Adjust the font size */
+  line-height: 1.5; /* Set line spacing */
+  max-height: 3em; /* Limit to 2 lines (line-height * 2) */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis to truncated text */
+  display: -webkit-box; /* Required for multi-line ellipsis */
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical; /* Required for multi-line ellipsis */
+  margin: 0; /* Remove default margins */
+  user-select: none;
 }

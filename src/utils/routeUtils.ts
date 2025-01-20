@@ -1,5 +1,6 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { setColor } from "@/stores/colorSlice";
+import { setSongCardVisible } from "@/stores/statusSlice";
 
 export const generateRandomColors = () => {
   const colors = [
@@ -71,7 +72,9 @@ export const handleRouteColorChange = (pathname: string, dispatch: Dispatch, cur
 
   if (pathname === "/recommended") {   
     dispatch(setColor({ sideBar: current, content: backgroundGradient}));
-  } else {
+    dispatch(setSongCardVisible(false));
+  } else {    
     dispatch(setColor({ sideBar: nonRecommendMenuColor, content: nonRecommendPageColor}));
+    dispatch(setSongCardVisible(true));
   }
 };

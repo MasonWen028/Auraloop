@@ -13,10 +13,10 @@ interface OptionsProps {
   id: string
 }
 
-const PlayerActions = ({ id }: OptionsProps) => {
+const SongActions = ({ id }: OptionsProps) => {
   console.log(id);
   return <>
-    <Space size={"middle"} className="small-gap">
+    <Space style={{flex: 1, justifyContent: 'end', justifyItems: 'end'}} size={"middle"} className="small-gap">
       <Share className="action-btn"/>
       <Dislike className="action-btn"/>
       <Lyric className="action-btn"/>
@@ -28,4 +28,4 @@ const PlayerActions = ({ id }: OptionsProps) => {
   </>
 }
 
-export default PlayerActions;
+export default SongActions;

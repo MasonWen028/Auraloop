@@ -1,28 +1,3 @@
-.playlist-page {
-  padding: 20px;
-  padding-top: 50px;
-  color: #fff;
-  background-color: #121212; /* Dark theme background */
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-}
-
-/* Hide the scrollbar for Webkit browsers (e.g., Chrome, Edge, Safari) */
-.playlist-page::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide the scrollbar for Firefox */
-.playlist-page {
-  scrollbar-width: none; /* Hide scrollbar in Firefox */
-}
-
-/* For IE/Edge (legacy, optional) */
-.playlist-page {
-  -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
-}
-
 .playlist-header {
   display: flex;
   align-items: center;
@@ -47,36 +22,4 @@
   color: #aaa;
 }
 
-.play-all-button {
-  padding: 10px 20px;
-  background-color: #1db954; /* Spotify-like green */
-  color: #fff;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  margin-top: 10px;
-}
 
-.play-all-button:hover {
-  background-color: #1ed760;
-}
-
-.song-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.song-table th, .song-table td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #333;
-}
-
-.song-table th {
-  font-weight: bold;
-}
-
-.song-table tr:hover {
-  background-color: #333;
-}

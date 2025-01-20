@@ -1,0 +1,44 @@
+.tabs-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent; /* Transparent background */
+  padding: 10px 0;
+  position: relative; /* Create a containing context for absolute elements */
+}
+
+.tabs {
+  display: flex;
+  position: relative;
+  width: 100%; /* Full width for flexible layout */
+  gap: 30px; /* Space between tabs */
+}
+
+.tab {
+  text-align: center;
+  font-size: 14px;
+  font-weight: normal;
+  padding: 5px 0;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+  user-select: none;
+  color: rgb(94, 94, 94);
+  font-size: 16px;
+}
+
+.tab.active {
+  color: rgb(220,220,220); /* Highlight active tab */
+}
+
+.tab-indicator {
+  user-select: none;
+  position: absolute;
+  top: 100%; /* Position it below the tabs */
+  height: 2px; /* Indicator thickness */
+  width: 14px; /* Fixed width for the indicator */
+  background: rgb(220,220,220);/* Indicator color */
+  transition: transform 0.3s ease; /* Smooth transitions */
+  left: 0; /* Default starting position */
+  transition: left 0.3s ease, transform 0.3s ease; /* Dynamically position the indicator */
+}

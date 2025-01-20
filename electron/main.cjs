@@ -7,6 +7,8 @@ app.on('ready', () => {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 700,
+    minWidth: 1000,
+    minHeight: 600,
     frame: false,
     autoHideMenuBar: true,
     webPreferences: {

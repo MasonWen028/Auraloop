@@ -1,0 +1,29 @@
+.forward-back-icon {
+  width: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  cursor: pointer;
+  padding: 10px 0;
+  border-radius: 20px;
+}
+
+.play-pause-icon:hover,
+.forward-back-icon:hover {
+  background: rgb(255,255,255, 0.1);
+}
+
+
+
+.play-pause-icon {
+  width: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  cursor: pointer;
+  background: rgb(255,255,255, 0.05);
+  padding: 10px 0;
+  border-radius: 20px;
+}

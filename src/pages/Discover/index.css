@@ -1,0 +1,12 @@
+.page-title {
+  font-size: 22px;
+  user-select: none;
+}
+
+.recommend-playlist {
+  user-select: none;
+  margin-top: 20px;
+  font-size: 16px;
+  gap: 10px;
+  display: flex;
+}

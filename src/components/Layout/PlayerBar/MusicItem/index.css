@@ -1,0 +1,67 @@
+.music-item {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  color: white;
+  font-family: Arial, sans-serif;
+  flex: 1;
+  overflow: hidden; /* Ensure content stays within the parent */
+}
+
+.album-cover {
+  width: 55px;
+  height: 55px;
+  border-radius: 5px;
+  margin-right: 15px;
+}
+
+.song-info {
+  height: 100%;
+  overflow: hidden; /* Prevent overflow from affecting layout */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.artist-name {
+  color: #aaaaaa;
+  user-select: none;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.favorite-icon {
+  width: 100px;
+  height: 30px;
+}
+
+.song-name {
+  font-size: 16px;
+  user-select: none;
+  margin-right: 10px;
+  font-weight: normal;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflow content */
+  display: flex;
+  position: relative;
+}
+
+.song-name span {
+  display: inline-block;
+  padding-right: 20px; /* Add spacing between repetitions */
+  animation: scrollText 20s linear infinite; /* Continuous scrolling animation */
+}
+
+.song-name.no-scroll span {
+  animation: none; /* Disable animation when scrolling isn't required */
+}
+
+/* Keyframes for smooth scrolling */
+@keyframes scrollText {
+  0% {
+    transform: translateX(0); /* Start fully visible */
+  }
+  100% {
+    transform: translateX(-100%); /* Scroll completely to the left */
+  }
+}

@@ -1,0 +1,5 @@
+.playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* Always 5 cards per row */
+  gap: 20px; /* Space between cards */
+}

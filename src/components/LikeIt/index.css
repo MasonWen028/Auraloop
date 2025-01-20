@@ -1,0 +1,36 @@
+.oper-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 33%;
+  height: 24px;
+  border-right: 1px solid rgba(154, 157, 170, 0.3);
+  cursor: pointer;
+}
+
+.oper-item:last-child {
+  border: none;
+}
+
+.oper-item .heart {
+  height: 20px;
+  position: relative;
+  display: inline-block;
+}
+
+.oper-item .heart svg {
+  transition: fill 0.3s, stroke 0.3s;
+  stroke: #fff;
+  stroke-width: 80px;
+  fill: #fff;
+}
+
+.heart svg {
+  stroke: #e05b5b;
+}
+
+.oper-text {
+  margin-left: 12px;
+  font-size: 13px;
+  user-select: none;
+}

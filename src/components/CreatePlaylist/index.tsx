@@ -38,6 +38,8 @@ const CreatePlaylistModal: React.FC<CreatePlaylistModalProps> = ({
       open={visible}
       onOk={handleOk}
       centered
+      transitionName=""
+      maskTransitionName=""
       closable={false}
       maskClosable={true}
       onCancel={handleCancel}
