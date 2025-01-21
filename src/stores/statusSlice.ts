@@ -7,7 +7,7 @@ let initialState: StatusState = {
   searchFocus: false,
   searchInputValue: "",
   showPlayBar: true,
-  playStatus: false,
+  playStatus: true,
   playLoading: false,
   playUblock: false,
   playListShow: false,
@@ -36,7 +36,7 @@ let initialState: StatusState = {
   showPlayerComment: false,
   updateCheck: false,
   showSongInfo: false,
-  currentSongId: 0,
+  currentSongId: 2,
 };
 
 // Create the slice
@@ -45,8 +45,8 @@ const status = createSlice({
   initialState,
   reducers: {
     // Generic method to update the state
-    setStatus: (state, action: PayloadAction<Partial<StatusState>>) => {
-      return { ...state, ...action.payload };
+    setStatus: (state, action: PayloadAction<boolean>) => {
+      state.playStatus = action.payload;
     },
     // Toggle menuCollapsed
     toggleMenu: (state) => {
@@ -75,6 +75,10 @@ const status = createSlice({
     // Update showing song card or not
     setSongCardVisible: (state,  action: PayloadAction<boolean>) => {
       state.showSongInfo = action.payload;
+    },
+    // Update current sone id
+    setCurrentSongId: (state, action: PayloadAction<number>) => {
+      state.currentSongId =action.payload;
     }
   },
 });
@@ -88,7 +92,8 @@ export const {
   setCurrentTime,
   setPlayVolume,
   togglePureLyricMode,
-  setSongCardVisible
+  setSongCardVisible,
+  setCurrentSongId
 } = status.actions;
 
 // Export the reducer

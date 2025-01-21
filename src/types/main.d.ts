@@ -185,6 +185,17 @@ export type SongLevelDataType = {
   br?: number;
 };
 
+export type AlbumType = {
+  id: number;
+  name: string;
+  cover: string;
+  artist?: ArtistType;
+  description?: string;
+  releaseDate?: string;
+  songCount?: number;
+};
+
+
 // setting
 export type SettingType = "general" | "play" | "lyrics" | "keyboard" | "local" | "other" | "about";
 

@@ -1,0 +1,55 @@
+
+.ant-dropdown-menu-vertical,
+.song-actions .ant-dropdown-menu  {
+  background-color: #292929 !important; /* Set the desired background color */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  color: white; /* Optional: Change text color */
+  width: 200px;
+  padding:5px 0;
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.5);
+}
+
+
+.song-actions .ant-dropdown-menu .ant-dropdown-menu-submenu-vertical,
+.song-actions .ant-dropdown-menu .ant-dropdown-menu-item {
+  color: white;
+  height: 40px;
+  align-items: center;
+}
+.song-actions .ant-dropdown-menu .ant-dropdown-menu-submenu-title {
+  color: white;
+  height: 40px;
+  align-items: center;
+}
+
+.song-actions .ant-dropdown-menu-submenu .ant-dropdown-menu-submenu-title {
+  color: white;
+}
+
+.song-actions .ant-dropdown-menu-submenu-expand-icon {
+  display: none;
+}
+
+.song-actions .ant-dropdown-menu .ant-dropdown-menu-submenu-vertical:hover,
+.song-actions .ant-dropdown-menu .ant-dropdown-menu-item:hover {
+  background-color: #343434 !important;
+}
+
+.song-actions .ant-dropdown-menu .ant-dropdown-menu-item-icon svg{
+  width: 16px;
+  height: 16px;
+}
+
+.song-actions-sub { 
+  height: 40px;
+}
+
+.song-actions-sub .ant-dropdown-menu-item-icon,
+.song-actions-sub .ant-dropdown-menu-title-content{
+  color: white;
+}
+
+.song-actions-sub:hover {
+  background-color: #343434 !important;
+}
+

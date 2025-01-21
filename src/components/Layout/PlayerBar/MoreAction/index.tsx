@@ -1,7 +1,7 @@
 import More from "@/components/SvgIcon/More";
 import { InfoCircleOutlined, WarningOutlined } from "@ant-design/icons";
 import { Dropdown, MenuProps } from "antd";
-
+import './index.css'
 
 const items: MenuProps['items'] = [
   {

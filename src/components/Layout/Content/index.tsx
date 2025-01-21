@@ -19,7 +19,6 @@ const Content: React.FC<ContentProps> = ({ children }) => {
       right: 0,
       background: content,
       flexWrap: "nowrap" as const,
-      paddingTop: 50
     },
   };
 

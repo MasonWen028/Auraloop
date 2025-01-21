@@ -47,23 +47,3 @@ html, body {
 .read-the-docs {
   color: #888;
 }
-
-.custom-dropdown-menu .ant-dropdown-menu {
-  background-color: #292929 !important; /* Set the desired background color */
-  border-radius: 8px; /* Optional: Add rounded corners */
-  color: white; /* Optional: Change text color */
-  width: 200px;
-}
-
-.custom-dropdown-menu .ant-dropdown-menu .ant-dropdown-menu-item {
-  color: white;
-}
-
-.custom-dropdown-menu .ant-dropdown-menu .ant-dropdown-menu-item:hover {
-  background-color: #343434;
-}
-
-.custom-dropdown-menu .ant-dropdown-menu .ant-dropdown-menu-item-icon svg{
-  width: 16px;
-  height: 16px;
-}

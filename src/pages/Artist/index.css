@@ -1,0 +1,110 @@
+.artist-container {
+  color: white;
+  margin: 0 auto;
+  margin-top: 50px;
+  user-select: none;
+  padding: 10px;
+}
+
+.artist-header {
+  display: flex;
+  height: 200px;
+}
+
+.artist-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  margin-right: 20px;
+}
+
+.artist-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.artist-info h2 {
+  margin: 0;
+  flex: 1;
+}
+
+.artist-info .count {
+  margin: 5px 0;
+  flex: 2;
+  display: flex;
+}
+
+.artist-info .follow {
+  flex: 2;  
+  display: flex;
+  align-items: end;
+  justify-content: start;
+}
+
+.artist-info .brief {
+  flex: 1;  
+  display: flex;
+  align-items: end;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.read-more-button {
+  background: none;
+  border: none;
+  color: blue;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  text-decoration: underline;
+  margin-top: 5px;
+}
+
+.brief-container {
+  position: relative;
+}
+
+.follow-button {
+  background-color: #dcdcdc;
+  color: black;
+  flex-shrink: 0; /* Prevents the button from shrinking */
+  flex-grow: 0; /* Prevents the button from expanding */
+  width: 90px;
+  height: 30px;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.follow-button:hover {
+  background-color: #fff;
+}
+
+.follow-button:focus {
+  outline: none;
+}
+
+.show-all-hits {
+  color: #646464;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.artist-songs {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.artist-songs .text {
+  font-size: 1.2rem;
+}
+

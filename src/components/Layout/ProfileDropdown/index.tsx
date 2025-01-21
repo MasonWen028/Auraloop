@@ -48,7 +48,7 @@ const ProfileDropdown: React.FC = () => {
     <Dropdown overlayClassName="custom-dropdown-menu" menu={{items}} trigger={['click']} placement="bottomRight">
       <Badge dot style={{marginRight: 8}}>
         <Avatar
-            src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
+            src="http://p1.music.126.net/AWiaSRiMztcJt7Y6_Hi25A==/7874702278826849.jpg?param=180y180"
             size="default"
             style={{ cursor: 'pointer', WebkitAppRegion: 'no-drag' }}
           />
