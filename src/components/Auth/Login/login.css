@@ -1,0 +1,86 @@
+.login {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  user-select: none;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  margin: 20px auto 30px auto;
+}
+
+.other {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close {
+  margin-bottom: 8px;
+}
+
+
+.login .ant-modal-body {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.login .ant-modal-content {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.login .tabs {
+  justify-content: center;
+  color: #dcdcdc;
+}
+
+.login .tab {
+  color: #dcdcdc;
+  font-size: 20px;
+}
+
+.login .tab.active {
+  color: #5d5d5d
+}
+
+.login .ant-modal-content {
+  padding: 0;
+}
+
+.login .ant-modal-header {
+  height: 30px;
+  margin-bottom: 0;
+  margin-left: 5px;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.login .ant-modal-title {
+  font-size: inherit;
+}
+
+.login .ant-modal-close {
+  top: 0;
+  right: 0;
+  border-radius: 0 6px 0 0 ;
+  height: 32px;
+  width: 45px;
+}
+
+.login .ant-modal-close-x {
+  font-size: 14px;
+}
+
+.login .ant-modal-close:hover {
+  background-color: #bc2813;
+  color: white;
+}

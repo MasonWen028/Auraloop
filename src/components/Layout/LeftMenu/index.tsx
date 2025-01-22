@@ -33,7 +33,7 @@ const LeftMenu: React.FC = () => {
     // Add API call here to save the playlist to the backend
   };
 
-  const [playlists, setPlaylists] = useState<Array<{ id: string; name: string }>>([
+  const [playlists, setPlaylistsr] = useState<Array<{ id: string; name: string }>>([
     {
       id: '233',
       name: '测试一下看看'

@@ -1,0 +1,135 @@
+
+.login-phone {
+  width: 100%;
+  padding: 20px;
+  height: 375px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.phone-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between form items */
+  width: 320px;
+}
+
+.phone-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.phone-form .ant-input-group {
+  display: flex;
+  align-items: center;
+}
+
+.country-pop {
+  width: 160px;
+}
+
+.phone-form .ant-input-group .ant-select {
+  flex: 0 0 25%; /* Fixed width for country dropdown */
+  height: 50px;
+}
+
+.phone-form .ant-input-group .ant-input {
+  flex: 1; /* Fill remaining space for phone input */
+}
+
+.phone-form .ant-input-affix-wrapper,
+.phone-form .ant-input {
+  height: 50px; /* Consistent input height */
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+
+}
+
+.phone-form .phone-selector {
+  background-color: #f2f2f2;
+}
+
+.phone-selector .ant-select-selector {
+  background-color: #f2f2f2;
+}
+
+.phone-number .ant-input {
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  background-color: #f2f2f2;
+}
+
+.phone-number .ant-input:focus,
+.phone-number .ant-input:hover,
+.phone-form .ant-input-affix-wrapper-focused {
+  box-shadow: none;
+  border-color: #d9d9d9;
+}
+
+
+.phone-form .ant-btn {
+  height: 40px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.phone-form .ant-btn-primary {
+  background: #1890ff;
+  border: none;
+}
+
+.phone-form .ant-btn-primary:hover,
+.phone-form .ant-btn-primary:focus {
+  outline: none;
+}
+
+.phone-form .ant-btn[disabled] {
+  background: #f0f0f0;
+  color: #bfbfbf;
+  cursor: not-allowed;
+}
+
+.send-captcha {
+  cursor: pointer;
+}
+
+.send-captcha.disabled {
+  cursor:no-drop;
+  color: #a4a4a4;
+}
+
+.phone-form .ant-btn-link {
+  font-size: 14px;
+  padding: 0;
+  height: auto;
+  line-height: normal;
+  color: #a4a4a4;
+}
+/* .phone-form .ant-input-affix-wrapper:focus,
+.phone-form .ant-input-affix-wrapper:hover, */
+.phone-form .ant-btn-link:focus,
+.phone-form .ant-btn-link:hover {
+  outline: none;
+  color: #a4a4a4;
+  border: none;
+}
+
+.phone-form .send {
+  padding: 0;
+  background: none;
+  border: none;
+  color: #1890ff;
+  cursor: pointer;
+}
+
+.phone-form .send:disabled {
+  color: #bfbfbf;
+  cursor: not-allowed;
+}
+
+.phone-form .login {
+  width: 100%;
+  font-size: 16px;
+  font-weight: bold;
+}

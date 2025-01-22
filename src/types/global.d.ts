@@ -5,7 +5,7 @@ interface Window {
     maximize: () => void;
     close: () => void;
     ipcRenderer: Omit<Electron.IpcRenderer, 'removeListener'> &  {
-      send: (channel: string, data: any) => void;
+      send: (channel: string, data?: any) => void;
       on: (channel: string, listener: (...args: any[]) => void) => void;
       once: (channel: string, listener: (...args: any[]) => void) => void;
       // Explicitly omitting `removeListener`

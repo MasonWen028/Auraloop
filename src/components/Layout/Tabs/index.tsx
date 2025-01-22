@@ -1,12 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, ReactNode } from "react";
 import "./index.css";
 
 interface TabProps {
   tabs: string[]; // Array of tab labels
-  onTabChange?: (selectedIndex: number) => void; // Callback when the selected tab changes
+  onTabChange?: (selectedIndex: number) => void;
+  children?: ReactNode
 }
 
-const Tabs: React.FC<TabProps> = ({ tabs, onTabChange }) => {
+const Tabs: React.FC<TabProps> = ({ tabs, onTabChange, children }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const tabsRef = useRef<HTMLDivElement>(null); // Ref to the tabs container
   const [indicatorPosition, setIndicatorPosition] = useState({
@@ -33,26 +34,29 @@ const Tabs: React.FC<TabProps> = ({ tabs, onTabChange }) => {
   }, [selectedTab]);
 
   return (
-    <div className="tabs-container">
-      <div className="tabs" ref={tabsRef}>
-        {tabs.map((tab, index) => (
+    <>
+      <div className="tabs-container">
+        <div className="tabs" ref={tabsRef}>
+          {tabs.map((tab, index) => (
+            <div
+              key={index}
+              className={`tab ${selectedTab === index ? "active" : ""}`}
+              onClick={() => handleTabClick(index)}
+            >
+              {tab}
+            </div>
+          ))}
           <div
-            key={index}
-            className={`tab ${selectedTab === index ? "active" : ""}`}
-            onClick={() => handleTabClick(index)}
-          >
-            {tab}
-          </div>
-        ))}
-        <div
-          className="tab-indicator"
-          style={{
-            left: `${indicatorPosition.left}px`,
-            width: `${indicatorPosition.width}px`,
-          }}
-        />
+            className="tab-indicator"
+            style={{
+              left: `${indicatorPosition.left}px`,
+              width: `${indicatorPosition.width}px`,
+            }}
+          />
+        </div>
       </div>
-    </div>
+      <div>{children}</div>
+    </>
   );
 };
 

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Playing from "../SvgIcon/Playing";
 import PlayPaused from "../SvgIcon/PlayPaused";
 import Pause from "../SvgIcon/Pause";
-import { setCurrentSongId, setStatus } from "@/stores/statusSlice";
+import { setCurrentSongId, setStatus } from "@/stores/slices/statusSlice";
 import LikeIt from "../LikeIt";
 import { isFavoritedSong } from "@/hooks/userLikedSong";
 import { Link } from "react-router-dom";

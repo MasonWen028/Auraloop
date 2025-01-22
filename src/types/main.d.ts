@@ -161,6 +161,8 @@ export interface UserDataType {
   mvCount?: number;
   subPlaylistCount?: number;
   createdPlaylistCount?: number;
+  cookies?: string;
+  loginType?: 0 | 1 | 2;
 }
 
 export interface UserLikeDataType {
@@ -270,4 +272,127 @@ export interface StatusState {
   updateCheck: boolean;
   showSongInfo: boolean;
   currentSongId: number;
+}
+
+interface SettingState {
+  themeMode: "light" | "dark" | "auto";
+  themeColorType:
+    | "default"
+    | "orange"
+    | "blue"
+    | "pink"
+    | "brown"
+    | "indigo"
+    | "green"
+    | "purple"
+    | "yellow"
+    | "teal"
+    | "custom";
+  themeCustomColor: string;
+  themeGlobalColor: boolean;
+  themeFollowCover: boolean;
+  globalFont: "default" | string;
+  LyricFont: "follow" | string;
+  showCloseAppTip: boolean;
+  closeAppMethod: "exit" | "hide";
+  showTaskbarProgress: boolean;
+  useOnlineService: boolean;
+  checkUpdateOnStart: boolean;
+  hideVipTag: boolean;
+  lyricFontSize: number;
+  lyricTranFontSize: number;
+  lyricRomaFontSize: number;
+  lyricFontBold: boolean;
+  showYrc: boolean;
+  showYrcAnimation: boolean;
+  showTran: boolean;
+  showRoma: boolean;
+  lyricsPosition: "flex-start" | "center" | "flex-end";
+  lyricsScrollPosition: "start" | "center";
+  downloadPath: string;
+  downloadMeta: boolean;
+  downloadCover: boolean;
+  downloadLyric: boolean;
+  saveMetaFile: boolean;
+  proxyProtocol: "off" | "http" | "https";
+  proxyServe: string;
+  proxyPort: number;
+  songLevel:
+    | "standard"
+    | "higher"
+    | "exhigh"
+    | "lossless"
+    | "hires"
+    | "jyeffect"
+    | "sky"
+    | "jymaster";
+  playDevice: "default" | string;
+  autoPlay: boolean;
+  songVolumeFade: boolean;
+  songVolumeFadeTime: number;
+  useSongUnlock: boolean;
+  countDownShow: boolean;
+  barLyricShow: boolean;
+  playerType: "cover" | "record";
+  playerBackgroundType: "none" | "animation" | "blur" | "color";
+  memoryLastSeek: boolean;
+  showPlaylistCount: boolean;
+  showSpectrums: boolean;
+  smtcOpen: boolean;
+  smtcOutputHighQualityCover: boolean;
+  lyricsBlur: boolean;
+  lrcMousePause: boolean;
+  playSongDemo: boolean;
+  showSearchHistory: boolean;
+  useAMLyrics: boolean;
+  useAMSpring: boolean;
+  menuShowCover: boolean;
+  preventSleep: boolean;
+  localFilesPath: string[];
+  localSeparators: string[];
+  showLocalCover: boolean;
+  routeAnimation: "none" | "fade" | "zoom" | "slide" | "up";
+  useRealIP: boolean;
+  realIP: string;
+  fullPlayerCache: boolean;
+  scrobbleSong: boolean;
+  dynamicCover: boolean;
+  useKeepAlive: boolean;
+  excludeKeywords: string[];
+  showDefaultLocalPath: boolean;
+}
+
+interface ListState {
+  playList: SongType[];
+  historyList: SongType[];
+  cloudPlayList: SongType[];
+  searchHistory: string[];
+  localPlayList: CoverType[];
+  userLoginStatus: boolean;
+  loginType: LoginType;
+  userData: UserDataType;
+  userLikeData: UserLikeDataType;
+  likeSongsList: {
+    detail: CoverType;
+    data: SongType[];
+  };
+  catData: {
+    type: Record<number, string>;
+    cats: CatType[];
+    hqCats: CatType[];
+  };
+}
+
+// Type for a single country
+interface Country {
+  zh: string;      // Chinese name of the country
+  en: string;      // English name of the country
+  locale: string;  // Locale code (e.g., "CN" for China)
+  code: string;    // Country code (e.g., "86" for China)
+}
+
+// Type for a group of countries
+interface CountryGroup {
+  label: string;         // Group label (e.g., "常用", "A", "B")
+  countryList: Country[]; // List of countries within the group
 }

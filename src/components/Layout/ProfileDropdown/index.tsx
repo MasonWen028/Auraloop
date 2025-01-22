@@ -1,11 +1,16 @@
-import React from 'react';
-import { Dropdown, Avatar, MenuProps, Badge } from 'antd';
+import React, { useState } from 'react';
+import { Dropdown, Avatar, MenuProps, Badge, Modal } from 'antd';
 import {
   UserOutlined,
   SettingOutlined,
   CrownOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
+import { Provider, useSelector } from 'react-redux';
+import Login from '@/components/Auth/Login';
+import store from '@/stores';
+
+
 
 const items: MenuProps['items'] = [
   {
@@ -44,16 +49,56 @@ const items: MenuProps['items'] = [
 ];
 
 const ProfileDropdown: React.FC = () => {
+
+  const { userLoginStatus } = useSelector((state: any) => state.data);
+
+  const [isLoginUiShown, setIsLoginUIShown] = useState(false);
+
+  const openUserLogin = () => {
+    setIsLoginUIShown(true);
+  };
+
+  const loginUIClosed = () => {
+
+  }
+
+  const styles = {
+    nonLogin: {
+      width: 75,
+      borderRadius: 20,
+      backgroundColor: 'rgb(255,255,255,0.3)',
+      color: 'white',
+      height: 32,
+      display: 'flex',
+      justifyContent: 'center',
+      gap: 3,
+      alignItems: 'center',
+      WebkitAppRegion: "no-drag",
+    },
+    icon: {
+      fontSize: 18
+    }
+  }
+
   return (
-    <Dropdown overlayClassName="custom-dropdown-menu" menu={{items}} trigger={['click']} placement="bottomRight">
-      <Badge dot style={{marginRight: 8}}>
-        <Avatar
-            src="http://p1.music.126.net/AWiaSRiMztcJt7Y6_Hi25A==/7874702278826849.jpg?param=180y180"
-            size="default"
-            style={{ cursor: 'pointer', WebkitAppRegion: 'no-drag' }}
-          />
-      </Badge>
-    </Dropdown>
+    <>
+      { userLoginStatus && <Dropdown overlayClassName="custom-dropdown-menu" menu={{items}} trigger={['click']} placement="bottomRight">
+        <Badge dot style={{marginRight: 8}}>
+          <Avatar
+              src="http://p1.music.126.net/AWiaSRiMztcJt7Y6_Hi25A==/7874702278826849.jpg?param=180y180"
+              size="default"
+              style={{ cursor: 'pointer', WebkitAppRegion: 'no-drag' }}
+            />
+        </Badge>
+      </Dropdown> }
+      {
+        !userLoginStatus && 
+        <div style={styles.nonLogin} onClick={openUserLogin}>
+          Login <UserOutlined style={styles.icon}></UserOutlined>
+        </div>
+      }
+      <Login visible={isLoginUiShown} onClose={loginUIClosed}/>
+    </>
   );
 };
 

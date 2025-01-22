@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import localforage from "localforage";
-import { SongItem } from '@/types/main'
+import { ListState, SongItem, UserDataType } from '@/types/main'
 
 // Initialize localForage instances
 const musicDB = localforage.createInstance({
@@ -16,7 +16,7 @@ const userDB = localforage.createInstance({
 });
 
 // Define the initial state
-const initialState = {
+const initialState: ListState = {
   playList: [] as SongItem[],
   historyList: [] as SongItem[],
   searchHistory: [],
@@ -29,6 +29,8 @@ const initialState = {
     userType: 0,
     vipType: 0,
     name: "",
+    cookies: "",
+    loginType: 0
   },
   userLikeData: {
     songs: [],
@@ -53,11 +55,37 @@ const initialState = {
   },
 };
 
+async function loadUserData() {
+  try {
+    const userDataKeys = await userDB.keys();
+    const userLikeData: Record<string, UserDataType> = {};
+
+    await Promise.all(
+      userDataKeys.map(async (key) => {
+        const data = await userDB.getItem<UserDataType>(key);
+        if (data) {
+          userLikeData[key] = data;
+        }
+      })
+    );
+
+    console.log("Loaded user data:", userLikeData);
+  } catch (error) {
+    console.error("Error loading data from userDB:", error);
+  }
+} 
+
+loadUserData();
+
 // Create the dataSlice
 const dataSlice = createSlice({
   name: "data",
   initialState,
   reducers: {
+    setUserData(state, action: PayloadAction<UserDataType>) {
+      state.userData = action.payload;
+      userDB.setItem("userData", action.payload); // Persist in localForage
+    },
     // Set the playlist
     setPlayList(state, action: PayloadAction<any[]>) {
       state.playList = action.payload;
@@ -102,13 +130,6 @@ const dataSlice = createSlice({
     setUserLoginStatus(state, action: PayloadAction<boolean>) {
       state.userLoginStatus = action.payload;
     },
-
-    // Set user data
-    setUserData(state, action: PayloadAction<any>) {
-      state.userData = action.payload;
-      userDB.setItem("userData", action.payload); // Persist in localForage
-    },
-
     // Set user liked data
     setUserLikeData(state, action: PayloadAction<any>) {
       state.userLikeData = action.payload;

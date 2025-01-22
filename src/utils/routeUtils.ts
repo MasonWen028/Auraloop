@@ -1,6 +1,6 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import { setColor } from "@/stores/colorSlice";
-import { setSongCardVisible } from "@/stores/statusSlice";
+import { setColor } from "@/stores/slices/colorSlice";
+import { setSongCardVisible } from "@/stores/slices/statusSlice";
 
 export const generateRandomColors = () => {
   const colors = [
