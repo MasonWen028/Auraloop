@@ -11,6 +11,7 @@ import LikeIt from "../LikeIt";
 import { Link } from "react-router-dom";
 import SongActions from "../SongActions";
 import { SongItem } from "@/types/main";
+import Loading from "../Loading";
 
 interface SongTableProps {
   songs: SongItem[];
@@ -47,6 +48,7 @@ const SongTable: React.FC<SongTableProps> = ({ songs, style, inAlbum }) => {
 
   return (
     <div className={`song-table`} style={style}>
+      <Loading loading={true}/>
       {/* Render table header dynamically */}
       <div className="song-table-header">
         <div className="holder"></div>

@@ -9,6 +9,7 @@ import Brief from '@/components/Brief';
 import { useParams } from "react-router-dom";
 import { artistAblums, artistDetail, artistHotSongs } from '@/api/artist';
 import { useEffect, useState } from 'react';
+import ImageWithSkeleton from '@/components/ImageWithSkeleton';
 
 const Artist = () => {
   const [artist, setArtist] = useState<ArtistType>();
@@ -69,11 +70,15 @@ const Artist = () => {
   return (
     <div className="artist-container">
       <div className="artist-header">
-        <img
+        {/* <img
           className="artist-image"
           src={artist?.avatar}
           alt="Artist"
-        />
+        /> */}
+        <ImageWithSkeleton
+          className="artist-image"
+          src={artist?.avatar}
+          alt="Artist"></ImageWithSkeleton>
         <div className="artist-info">
           <h2>{artist?.name}</h2>
           <div className="count">580 关注 · 300w+ 粉丝</div>
