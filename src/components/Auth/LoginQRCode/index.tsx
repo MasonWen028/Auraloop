@@ -5,6 +5,7 @@ import { qrKey, checkQr } from "@/api/login";
 import { useInterval } from "@/hooks/useInterval"; // Replace with your custom hook for intervals
 import "./index.css";
 import qrlogin from '@/assets/images/qrlogin.jpg';
+import ImageWithSkeleton from "@/components/ImageWithSkeleton";
 
 const { Text } = Typography;
 
@@ -100,7 +101,8 @@ const LoginQRCode: React.FC<LoginQRCodeProps> = ({ pause = false, onSaveLogin })
         </div>
         <div className="content">
           <div className="preview-section">
-            <img src={qrlogin} alt="播放器点击搜索" />
+            <ImageWithSkeleton src={qrlogin} alt={'Player click to search'} style={{width: 352, height: 297}} skeletonStyle={undefined} />
+            {/* <img src={qrlogin} alt="播放器点击搜索" /> */}
             <div className="qr-section">
             <div className="qr-code">
                 <div className={`qr`}>

@@ -24,9 +24,10 @@ export const personalized = (
   const url = type === "playlist" ? "/personalized" : `/personalized/${type}`;
   return request({
     url,
-    params: {
+    data: {
       limit,
     },
+    method: 'post'
   });
 };
 
@@ -60,7 +61,7 @@ export const topArtists = async (limit: number = 10) => {
 export const newSongs = async (type: 0 | 7 | 96 | 16 | 8 = 0) => {
   return request({
     url: "/top/song",
-    params: { type },
+    params: { areaId: type },
   });
 };
 

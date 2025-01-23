@@ -1,6 +1,7 @@
 import React from "react";
 import "./index.css";
 import { Card } from "antd";
+import ImageWithSkeleton from "../ImageWithSkeleton";
 
 const { Meta } = Card;
 
@@ -21,7 +22,7 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
     <>
       <div className="playlist-card" onClick={onClick}>
         <div className="playlist-image">
-          <img src={imageSrc} alt={title} />
+          <ImageWithSkeleton src={imageSrc} alt={title}/>
         </div>
         <div className="playlist-info">
           <h3 className="playlist-title">{title}</h3>

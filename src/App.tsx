@@ -21,7 +21,7 @@ function App() {
         <PlayerBar/>
         <Content>
               <Routes>
-                <Route path="/" element={<Song />} />
+                <Route path="/recommended" element={<Song />} />
                 <Route path="/discover" element={<Discover />} />
                 <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
                 <Route path="/artist/:artistId" element={<Artist />} />

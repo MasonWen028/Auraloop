@@ -12,7 +12,7 @@ export const likeAlbum = (id: number, t: number = 1 | 2) => {
     params: {
       id,
       t,
-      timestamp: new Date().getTime(),
+      
     },
   });
 };

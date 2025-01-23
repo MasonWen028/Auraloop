@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { isElectron } from "./platformDetector";
+import store from "@/stores";
 
 // Global base URL
 const baseURL: string = "https://localhost:7164";
@@ -15,10 +16,23 @@ const server: AxiosInstance = axios.create({
   timeout: 15000,
 });
 
+
+
 // Request interceptor
 server.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
 
+    if (!request.params) {
+      request.params = {};
+    }
+
+    request.params.timestamp = Date.now();
+
+    const { cookies } = store.getState().data.userData;
+
+    if (cookies) {
+      request.headers.Authorization = cookies;
+    }
     // Add cookie if not excluded and the user is logged in or a specific cookie exists
     // if (!request.params.noCookie && (isLogin() || getCookie("MUSIC_U") !== null)) {
     //   const cookie = `MUSIC_U=${getCookie("MUSIC_U")};`;

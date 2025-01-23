@@ -1,6 +1,8 @@
-import { userAccount, userDetail, userSubcount } from "@/api/user";
+import { dailyRecommend } from "@/api/rec";
+import { userAccount, userAlbum, userArtist, userDetail, userLike, userPlaylist, userSubcount } from "@/api/user";
 import store from "@/stores";
-import { setUserData } from "@/stores/slices/dataSlicce";
+import { setUserData, setCookies, setLikeAlbumList, setLikeSongsList, setLikePlaylist, setLikeArtistList } from "@/stores/slices/dataSlicce";
+import { updatePlaySong } from "@/stores/slices/musicSlice";
 
 /**
  * 用户是否登录
@@ -12,9 +14,14 @@ export const isLogin = (): 0 | 1 | 2 => {
   return userData.loginType ?? 0;
 };
 
-export const updateUserData = async (loginType: 0 | 1 | 2) => {
+export const updateCookie = async (cookie: string) => {
+  if (!cookie) return;
+  store.dispatch(setCookies(cookie));
+  await updateUserData();
+}
+
+export const updateUserData = async () => {
   try {
-    if (!loginType) return;
     // userId
     const { profile } = await userAccount();
     const userId = profile.userId;
@@ -38,18 +45,15 @@ export const updateUserData = async (loginType: 0 | 1 | 2) => {
       mvCount: subcountData.mvCount,
       subPlaylistCount: subcountData.subPlaylistCount,
       createdPlaylistCount: subcountData.createdPlaylistCount,
+    
     }));
     
     // 获取用户喜欢数据
     const allUserLikeResult: PromiseSettledResult<void>[] = await Promise.allSettled([
-      // updateUserLikeSongs(),
-      // updateUserLikePlaylist(),
-      // updateUserLikeArtists(),
-      // updateUserLikeAlbums(),
-      // updateUserLikeMvs(),
-      // updateUserLikeDjs(),
-      // // 每日推荐
-      // updateDailySongsData(),
+      updateUserLikeSongs(),
+      updateUserLikePlaylist(),
+      updateUserLikeArtists(),
+      updateUserLikeAlbums(),
     ]);
     // 若部分失败
     const hasFailed = allUserLikeResult.some((result) => result.status === "rejected");
@@ -59,3 +63,54 @@ export const updateUserData = async (loginType: 0 | 1 | 2) => {
     throw error;
   }
 };
+
+
+  // 更新用户喜欢歌曲
+  export const updateUserLikeSongs = async () => {
+    const { userData, userLoginStatus } = store.getState().data;
+
+    if (!userLoginStatus || !userData.userId) return;
+    
+    const result = await userLike(userData.userId);
+    store.dispatch(setLikeSongsList(result.ids));
+  };
+
+  // 更新用户喜欢歌单
+export const updateUserLikePlaylist = async () => {
+  const { userData, userLoginStatus } = store.getState().data;
+
+    if (!userLoginStatus || !userData.userId) return;
+
+    const result = await userPlaylist(30, 0, userData.userId);
+
+    store.dispatch(setLikePlaylist(result.playlist))
+}
+
+export const updateUserLikeArtists = async () => {
+  const { userData, userLoginStatus } = store.getState().data;
+
+    if (!userLoginStatus || !userData.userId) return;
+
+    const result = await userArtist();
+
+    store.dispatch(setLikeArtistList(result.data));
+}
+
+export const updateUserLikeAlbums = async () => {
+  const { userData, userLoginStatus } = store.getState().data;
+
+    if (!userLoginStatus || !userData.userId) return;
+
+    const result = await userAlbum();
+
+    store.dispatch(setLikeAlbumList(result.data));
+}
+
+export const updateDailySongsData = async () => {
+  const { userData, userLoginStatus } = store.getState().data;
+
+  if (!userLoginStatus || !userData.userId) return;
+
+  const result = await dailyRecommend("songs");
+  store.dispatch(updatePlaySong(result.data.dailySongs));
+}

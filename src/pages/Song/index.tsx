@@ -1,6 +1,13 @@
 import React from "react";
 
-const Song: React.FC = () => {
+interface SongProps {
+  type?: string;
+}
+
+
+const Song: React.FC<SongProps> = ({type}) => {
+  console.log(type);
+  
   return (
     <div>
       <h1>Home Page</h1>

@@ -17,7 +17,6 @@ async function loadInitialData(): Promise<CountryGroup[]> {
   try {
     const data = await countryCodeDb.getItem<CountryGroup[]>("countryGroupData");
     if (data) {
-      console.log("Loaded country data from DB:", data);
       return data;
     } else {
       console.log("No country data found in DB. Using initial data.");

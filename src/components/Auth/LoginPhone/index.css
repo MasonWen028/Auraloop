@@ -19,7 +19,7 @@
   margin-bottom: 0;
 }
 
-.phone-form .ant-input-group {
+.phone-form .ant-space-compact {
   display: flex;
   align-items: center;
 }
@@ -28,12 +28,12 @@
   width: 160px;
 }
 
-.phone-form .ant-input-group .ant-select {
+.phone-form .ant-space-compact .ant-select {
   flex: 0 0 25%; /* Fixed width for country dropdown */
   height: 50px;
 }
 
-.phone-form .ant-input-group .ant-input {
+.phone-form .ant-space-compact .ant-input {
   flex: 1; /* Fill remaining space for phone input */
 }
 

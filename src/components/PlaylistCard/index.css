@@ -41,4 +41,5 @@
   -webkit-box-orient: vertical; /* Required for multi-line ellipsis */
   margin: 0; /* Remove default margins */
   user-select: none;
+  text-align: left;
 }

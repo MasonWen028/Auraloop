@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, message, Modal, Divider } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
 import "./login.css"; // Replace with appropriate CSS
 import LoginUID from "../LoginUID";
 import LoginCookie from "../LoginCookie";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUserData } from "@/utils/auth";
+import { updateCookie } from "@/utils/auth";
 import Tabs from "@/components/Layout/Tabs";
 import LoginQRCode from "../LoginQRCode";
 import LoginPhone from "../LoginPhone";
+import { setUserLoginStatus } from "@/stores/slices/dataSlicce";
 
 const Login = ({visible, onClose }: {visible: boolean; onClose: () => void }) => {
   const { userData } = useSelector((state: any) => state.data)
@@ -31,7 +31,8 @@ const Login = ({visible, onClose }: {visible: boolean; onClose: () => void }) =>
       localStorage.setItem("lastLoginTime", Date.now().toString());
 
       if (type !== "uid") {
-        await updateUserData(loginData.cookie);
+        dispatch(setUserLoginStatus(true));
+        await updateCookie(loginData.cookie);        
       } else {
         //await updateSpecialUserData(loginData?.profile);
       }
@@ -46,6 +47,9 @@ const Login = ({visible, onClose }: {visible: boolean; onClose: () => void }) =>
     const modal = Modal.info({
       title: type === "uid" ? "UID 登录" : "Cookie 登录",
       centered: true,
+      className: 'uid-cookie',
+      maskClosable: true,
+      footer: null,
       content: (
         <>
           {type === "uid" ? (
@@ -74,9 +78,13 @@ const Login = ({visible, onClose }: {visible: boolean; onClose: () => void }) =>
     });
   };
 
+  const handleModalCanceled = () => {
+    setQrPause(false);
+    onClose();
+  }
+
   useEffect(() => {
     if (userLoginStatus) {
-      message.warning("已登录，请勿再次操作");
       onClose();
     }
   }, [userLoginStatus, onClose]);
@@ -87,7 +95,9 @@ const Login = ({visible, onClose }: {visible: boolean; onClose: () => void }) =>
 
   return (
     <Modal 
+      onCancel={handleModalCanceled}
       closable={true}
+      destroyOnClose={true}
       footer={null} 
       centered 
       title="Login"
@@ -114,13 +124,8 @@ const Login = ({visible, onClose }: {visible: boolean; onClose: () => void }) =>
 
       {/* Other Methods */}
       <div className="other">
-        <Button type="link" size="small" onClick={() => specialLogin("uid")}>
-          UID 登录
-        </Button>
-        <Divider type="vertical" />
-        <Button type="link" size="small" onClick={() => specialLogin("cookie")}>
-          Cookie 登录
-        </Button>
+        <span className="other-operation"  onClick={() => specialLogin("uid")}>UID 登录</span>
+        <span className="other-operation" onClick={() => specialLogin("cookie")}>Cookie 登录</span>
       </div>
     </Modal>
   );

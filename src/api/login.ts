@@ -5,8 +5,7 @@ export const qrKey = () => {
   return request({
     url: "/login/qrkey",
     params: {
-      noCookie: true,
-      timestamp: Date.now(),
+      noCookie: true
     },
   });
 };
@@ -18,8 +17,7 @@ export const qrCreate = (key: string, qrimg: boolean = true) => {
     params: {
       key,
       qrimg,
-      noCookie: true,
-      timestamp: Date.now(),
+      noCookie: true
     },
   });
 };
@@ -27,11 +25,10 @@ export const qrCreate = (key: string, qrimg: boolean = true) => {
 // 检查二维码状态
 export const checkQr = (key: string) => {
   return request({
-    url: "/login/qr/check",
+    url: "/login/qrcheck",
     params: {
       key,
-      noCookie: true,
-      timestamp: Date.now(),
+      noCookie: true
     },
   });
 };
@@ -44,8 +41,7 @@ export const loginPhone = (phone: number, captcha: number, ctcode: number = 86) 
       phone,
       captcha,
       ctcode,
-      noCookie: true,
-      timestamp: Date.now(),
+      noCookie: true
     },
   });
 };
@@ -57,8 +53,7 @@ export const sentCaptcha = (phone: number, ctcode: number = 86) => {
     params: {
       phone,
       ctcode,
-      noCookie: true,
-      timestamp: Date.now(),
+      noCookie: true
     },
   });
 };
@@ -70,8 +65,7 @@ export const verifyCaptcha = (phone: number, captcha: number, ctcode: number = 8
     params: {
       phone,
       captcha,
-      ctcode,
-      timestamp: Date.now(),
+      ctcode
     },
   });
 };

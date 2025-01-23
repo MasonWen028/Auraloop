@@ -17,8 +17,7 @@ export const userDetail = (uid: number) => {
   return request({
     url: "/user/detail",
     params: {
-      uid,
-      timestamp: Date.now(),
+      userId: uid
     },
   });
 };
@@ -48,10 +47,9 @@ export const userPlaylist = (limit: number = 50, offset: number = 0, uid: number
   return request({
     url: "/user/playlist",
     params: {
-      uid,
+      userId: uid,
       limit,
-      offset,
-      timestamp: Date.now(),
+      offset
     },
   });
 };
@@ -59,24 +57,24 @@ export const userPlaylist = (limit: number = 50, offset: number = 0, uid: number
 // 获取用户收藏专辑
 export const userAlbum = (limit: number = 50, offset: number = 0) => {
   return request({
-    url: "/album/sublist",
-    params: {
+    url: "/album/subscribed",
+    data: {
       limit,
-      offset,
-      timestamp: Date.now(),
+      offset
     },
+    method: 'post'
   });
 };
 
 // 获取用户收藏歌手
 export const userArtist = (limit: number = 50, offset: number = 0) => {
   return request({
-    url: "/artist/sublist",
-    params: {
+    url: "/user/artist/subscribed",
+    data: {
       limit,
-      offset,
-      timestamp: Date.now(),
+      offset
     },
+    method: 'post'
   });
 };
 
@@ -103,10 +101,9 @@ export const userDj = () => {
 // 获取用户喜欢的音乐
 export const userLike = (uid: number) => {
   return request({
-    url: "/likelist",
+    url: "/user/favorited",
     params: {
-      uid,
-      timestamp: Date.now(),
+      uid
     },
   });
 };
@@ -118,8 +115,7 @@ export const scrobble = (id: number, sourceid?: number, time?: number) => {
     params: {
       id,
       sourceid,
-      time,
-      timestamp: Date.now(),
+      time
     },
   });
 };
@@ -129,8 +125,7 @@ export const dailySignin = (type: 0 | 1 = 0) => {
   return request({
     url: "/daily_signin",
     params: {
-      type,
-      timestamp: Date.now(),
+      type
     },
   });
 };

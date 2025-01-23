@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Form, Input, Button, Select, message } from "antd";
+import { Form, Input, Button, Select, message, Space } from "antd";
 import { debounce } from "lodash-es";
 import { countryList, sentCaptcha, verifyCaptcha, loginPhone } from "@/api/login";
 import './index.css'
@@ -18,12 +18,10 @@ const LoginPhone = ({ onSaveLogin }: { onSaveLogin: (data: any, type: "phone") =
   const countries = useSelector((state: any) => state.countries);
   const dispatch = useDispatch();
 
-  console.log(countries);
-
   const getCountries = async () => {
     if (countries.length < 1) {
       const res = await countryList(); 
-      const countryGroups = JSON.parse(res).data
+      const countryGroups = res.data
       dispatch(setCountries(countryGroups));
     }
   }
@@ -43,7 +41,7 @@ const LoginPhone = ({ onSaveLogin }: { onSaveLogin: (data: any, type: "phone") =
         message.success("验证码发送成功");
         startTimer();
       } else {
-        message.error("验证码发送失败，请重试");
+        message.error(result.message);
         setCaptchaDisabled(false);
       }
     } catch (error) {
@@ -77,6 +75,7 @@ const LoginPhone = ({ onSaveLogin }: { onSaveLogin: (data: any, type: "phone") =
     try {
       const values = await form.validateFields();
       const captchaResult = await verifyCaptcha(values.phone, values.captcha, values.country);
+      console.log(captchaResult)
       if (captchaResult.code !== 200) {
         message.error("验证码错误，请重试");
         return;
@@ -106,9 +105,20 @@ const LoginPhone = ({ onSaveLogin }: { onSaveLogin: (data: any, type: "phone") =
     setSelectedCode(`+${value}`);
   };
 
+  const handleFormChange = (_changedValues: Partial<Record<string, any>>,
+    allValues: Record<string, any>) => {
+    const phone = allValues.phone;
+    const isValidPhone = /^[0-9]{11}$/.test(phone); 
+    setCaptchaDisabled(!isValidPhone); 
+  };
+
   return (
     <div className="login-phone">
-      <Form form={form} layout="vertical" className="phone-form">
+      <Form
+        form={form} 
+        layout="vertical" 
+        className="phone-form" 
+        onValuesChange={handleFormChange}>
         {/* Country and phone number input */}
         <Form.Item
           name="phone"
@@ -117,9 +127,9 @@ const LoginPhone = ({ onSaveLogin }: { onSaveLogin: (data: any, type: "phone") =
             { pattern: /^[0-9]{11}$/, message: "请输入有效的手机号" },
           ]}
         >
-          <Input.Group compact>
+          <Space.Compact>
             <Select
-              value={selectedCode} // Display the selected code
+              value={selectedCode}
               onChange={handleChange}
               defaultValue="+86"
               popupClassName="country-pop"
@@ -140,7 +150,7 @@ const LoginPhone = ({ onSaveLogin }: { onSaveLogin: (data: any, type: "phone") =
               style={{ width: "80%" }}
               placeholder="请输入手机号"
             />
-          </Input.Group>
+          </Space.Compact>
         </Form.Item>
 
         {/* Captcha input */}
@@ -152,7 +162,7 @@ const LoginPhone = ({ onSaveLogin }: { onSaveLogin: (data: any, type: "phone") =
             className="phone-number"
             placeholder="验证码"
             suffix={
-              <span className={`send-captcha ${captchaDisabled ? 'disabled': ''}`} onClick={getCaptcha} >
+              <span className={`send-captcha ${captchaDisabled ? 'disabled': ''}`} onClick={captchaDisabled ? undefined : getCaptcha} >
                 {captchaText}
               </span>
             }

@@ -6,8 +6,7 @@ export const userCloud = (limit: number = 50, offset: number = 0) => {
     url: "/user/cloud",
     params: {
       limit,
-      offset,
-      timestamp: Date.now(),
+      offset
     },
   });
 };
@@ -17,8 +16,7 @@ export const deleteCloudSong = (id: number) => {
   return request({
     url: "/user/cloud/del",
     params: {
-      id,
-      timestamp: Date.now(),
+      id
     },
   });
 };
@@ -35,8 +33,7 @@ export const matchCloudSong = (uid: number, sid: number, asid: number) => {
     params: {
       uid,
       sid,
-      asid,
-      timestamp: Date.now(),
+      asid
     },
   });
 };
@@ -89,8 +86,7 @@ export const importCloudSong = (
       bitrate,
       md5,
       artist,
-      album,
-      timestamp: Date.now(),
+      album
     },
   });
 };

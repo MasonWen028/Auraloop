@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dropdown, Avatar, MenuProps, Badge, Modal } from 'antd';
 import {
   UserOutlined,
@@ -9,6 +9,8 @@ import {
 import { Provider, useSelector } from 'react-redux';
 import Login from '@/components/Auth/Login';
 import store from '@/stores';
+import { updateUserData } from '@/utils/auth';
+import { createSelector } from '@reduxjs/toolkit';
 
 
 
@@ -48,9 +50,22 @@ const items: MenuProps['items'] = [
   },
 ];
 
-const ProfileDropdown: React.FC = () => {
+const ProfileDropdown: React.FC = () => { 
+  
 
   const { userLoginStatus } = useSelector((state: any) => state.data);
+
+  const { userData } = useSelector((state: any) => state.data);
+
+  const hasUpdated = useRef<boolean>(false);
+
+
+  useEffect(() => {
+    if (userLoginStatus && userData?.userId  && !hasUpdated.current) {
+      updateUserData();
+      hasUpdated.current = true;
+    }
+  }, [userLoginStatus, userData]);
 
   const [isLoginUiShown, setIsLoginUIShown] = useState(false);
 
@@ -59,7 +74,7 @@ const ProfileDropdown: React.FC = () => {
   };
 
   const loginUIClosed = () => {
-
+    setIsLoginUIShown(false);
   }
 
   const styles = {
@@ -85,7 +100,7 @@ const ProfileDropdown: React.FC = () => {
       { userLoginStatus && <Dropdown overlayClassName="custom-dropdown-menu" menu={{items}} trigger={['click']} placement="bottomRight">
         <Badge dot style={{marginRight: 8}}>
           <Avatar
-              src="http://p1.music.126.net/AWiaSRiMztcJt7Y6_Hi25A==/7874702278826849.jpg?param=180y180"
+              src={userData.avatarUrl}
               size="default"
               style={{ cursor: 'pointer', WebkitAppRegion: 'no-drag' }}
             />

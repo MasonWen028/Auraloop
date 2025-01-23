@@ -3,8 +3,8 @@
 export interface SongItem {
   id: number;
   name: string;
-  artists: string;
-  album: string;
+  artists: ArtistType[];
+  album: AlbumType;
   dj?: object;
   cover: string;
   coverSize?: CoverSize;
@@ -22,7 +22,8 @@ export interface SongItem {
   createTime?: number;
   updateTime?: number;
   playCount?: number;
-
+  ar: ArtistType[];
+  al: AlbumType;
   type: "song" | "radio";
 };
 
@@ -58,6 +59,7 @@ export type CoverType = {
 export type ArtistType = {
   id: number;
   name: string;
+  avatar: string;
   cover: string;
   coverSize?: CoverSize;
   alia?: string;
@@ -67,6 +69,7 @@ export type ArtistType = {
   musicSize?: number;
   mvSize?: number;
   fansSize?: number;
+  briefDesc: string;
 };
 
 export type CommentType = {
@@ -167,7 +170,7 @@ export interface UserDataType {
 
 export interface UserLikeDataType {
   songs: number[];
-  playlists: CoverType[];
+  playlists: PlaylistType[];
   artists: ArtistType[];
   albums: CoverType[];
   mvs: CoverType[];
@@ -396,3 +399,76 @@ interface CountryGroup {
   label: string;         // Group label (e.g., "常用", "A", "B")
   countryList: Country[]; // List of countries within the group
 }
+
+export interface Creator {
+  avatarUrl: string;
+  id: number;
+  name: string;
+}
+
+export interface CoverSize {
+  l: string;
+  m: string;
+  s: string;
+  xl: string;
+}
+
+export interface PlaylistType {
+  artists: string; // Assuming it's a string; adjust if it should be an array or object
+  commentCount?: number; // Optional because it's shown as undefined
+  count: number;
+  cover: string;
+  coverSize: CoverSize;
+  createTime: number; // Assuming it's a timestamp
+  creator: Creator;
+  description?: string; // Optional because it's shown as undefined
+  duration?: string; // Optional because of NaN:NaN:NaN
+  id: number;
+  liked?: boolean; // Optional because it's shown as undefined
+  likedCount?: number; // Optional because it's shown as undefined
+  name: string;
+  playCount: number;
+  privacy: number;
+  shareCount?: number; // Optional because it's shown as undefined
+  subCount?: number; // Optional because it's shown as undefined
+  tags: string[]; // Assuming it's an array of strings
+  tracks?: any[]; // Tracks is shown as empty; type `any[]` for now, adjust if more details are available
+  updateTime?: number | null; // Optional and can be null
+  updateTip?: string | null; // Optional and can be null
+  userId: number;
+}
+
+export interface AlbumType {
+  albumSize: number;
+  alias: string[];
+  briefDesc: string;
+  followed: boolean;
+  id: number;
+  img1v1Id: number | string; // The string value might be needed in some cases
+  img1v1Id_str?: string; // Optional as it may not always exist
+  img1v1Url: string;
+  musicSize: number;
+  name: string;
+  picId: string | number; // The type can vary based on backend structure
+  picUrl: string;
+  topicPerson: number;
+  trans: string;
+}
+
+export interface Msg {
+  name: string;
+  picId: number;
+  picUrl: string;
+  size: number;
+  subTime: number;
+}
+
+export interface AlbumType {
+  alias: string[];
+  artists: Artist[];
+  id: number;
+  msg: Msg[];
+  transNames: string[]; // Array of translated names
+}
+
+

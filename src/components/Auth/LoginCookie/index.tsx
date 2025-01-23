@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Input, Alert, Modal, message } from "antd";
 import SvgIcon from "@/components/SvgIcon";
 import { isElectron } from "@/utils/platformDetector";
+import './index.css'
 
 interface LoginCookieProps {
   onClose: () => void;
@@ -79,7 +80,6 @@ const LoginCookie: React.FC<LoginCookieProps> = ({ onClose, onSaveLogin }) => {
       <Alert
         message={
           <>
-            <SvgIcon name="Help" />
             可在官方的{" "}
             <a href="https://music.163.com/" target="_blank" rel="noopener noreferrer">
               网页端
@@ -105,9 +105,11 @@ const LoginCookie: React.FC<LoginCookieProps> = ({ onClose, onSaveLogin }) => {
             自动获取
           </Button>
         )}
-        <Button type="primary" onClick={handleLogin}>
-          登录
-        </Button>
+        {!isElectron && (
+          <Button type="primary" onClick={handleLogin}>
+            登录
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,24 @@
+.login-cookie {
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+
+.uid-cookie {
+  user-select: none;
+}
+
+.uid-cookie .anticon-info-circle {
+  display: none;
+}
+
+.uid-cookie .ant-modal-confirm-paragraph {
+  max-width: 100%;
+}
+
+.uid-cookie .menu {
+  display: flex;
+  justify-content: center;
+}

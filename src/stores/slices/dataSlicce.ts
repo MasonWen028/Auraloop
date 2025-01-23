@@ -1,6 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import localforage from "localforage";
-import { ListState, SongItem, UserDataType } from '@/types/main'
+import { AlbumType, ArtistType, CoverType, ListState, PlaylistType, SongItem, UserDataType } from '@/types/main'
+import cloneDeep from "lodash-es/cloneDeep";
 
 // Initialize localForage instances
 const musicDB = localforage.createInstance({
@@ -16,7 +17,7 @@ const userDB = localforage.createInstance({
 });
 
 // Define the initial state
-const initialState: ListState = {
+let initialState: ListState = {
   playList: [] as SongItem[],
   historyList: [] as SongItem[],
   searchHistory: [],
@@ -33,10 +34,10 @@ const initialState: ListState = {
     loginType: 0
   },
   userLikeData: {
-    songs: [],
-    playlists: [],
-    artists: [],
-    albums: [],
+    songs: [] as number[],
+    playlists: [] as PlaylistType[],
+    artists: [] as ArtistType[],
+    albums: [] as AlbumType[],
     mvs: [],
     djs: [],
   },
@@ -58,24 +59,29 @@ const initialState: ListState = {
 async function loadUserData() {
   try {
     const userDataKeys = await userDB.keys();
-    const userLikeData: Record<string, UserDataType> = {};
+    const userDataList: Record<string, UserDataType> = {};
 
     await Promise.all(
       userDataKeys.map(async (key) => {
         const data = await userDB.getItem<UserDataType>(key);
         if (data) {
-          userLikeData[key] = data;
+          userDataList[key] = data;
         }
       })
     );
+    if (userDataList.userData) {
+      initialState = {...initialState, userData: userDataList.userData,userLoginStatus: true }
+    }
 
-    console.log("Loaded user data:", userLikeData);
+    if (userDataList.userLikeData) {
+      initialState = {...initialState, userLikeData: userDataList.userLikeData as any}
+    }
   } catch (error) {
     console.error("Error loading data from userDB:", error);
   }
 } 
 
-loadUserData();
+await loadUserData();
 
 // Create the dataSlice
 const dataSlice = createSlice({
@@ -83,8 +89,11 @@ const dataSlice = createSlice({
   initialState,
   reducers: {
     setUserData(state, action: PayloadAction<UserDataType>) {
-      state.userData = action.payload;
-      userDB.setItem("userData", action.payload); // Persist in localForage
+      state.userData =  {...state.userData, ...action.payload};
+      userDB.setItem("userData", state.userData);
+    },
+    setCookies(state, action: PayloadAction<string>) {
+      state.userData = {...state.userData, cookies: action.payload};
     },
     // Set the playlist
     setPlayList(state, action: PayloadAction<any[]>) {
@@ -115,9 +124,27 @@ const dataSlice = createSlice({
     },
 
     // Set "liked" songs
-    setLikeSongsList(state, action: PayloadAction<{ detail: any; data: any[] }>) {
-      state.likeSongsList = action.payload;
-      musicDB.setItem("likeSongsList", action.payload); // Persist in localForage
+    setLikeSongsList(state, action: PayloadAction<number[]>) {
+      state.userLikeData.songs = action.payload;
+      userDB.setItem("userLikeData", JSON.parse(JSON.stringify(state.userLikeData)));
+    },
+
+    // Set "liked" playlists
+    setLikePlaylist(state, action: PayloadAction<PlaylistType[]>) {
+      state.userLikeData.playlists = action.payload;
+      userDB.setItem("userLikeData", JSON.parse(JSON.stringify(state.userLikeData)));
+    },
+
+    // Set "liked" artists
+    setLikeArtistList(state, action: PayloadAction<ArtistType[]>) {
+      state.userLikeData.artists = action.payload;
+      userDB.setItem("userLikeData", JSON.parse(JSON.stringify(state.userLikeData)));
+    },
+
+    // Set "liked" album
+    setLikeAlbumList(state, action: PayloadAction<CoverType[]>) {
+      state.userLikeData.albums = action.payload;
+      userDB.setItem("userLikeData", JSON.parse(JSON.stringify(state.userLikeData)));
     },
 
     // Set cloud playlist
@@ -166,6 +193,9 @@ const dataSlice = createSlice({
 
 export const {
   setPlayList,
+  setLikePlaylist,
+  setLikeAlbumList,
+  setLikeArtistList,
   addSongToPlayList,
   setHistory,
   clearHistory,
@@ -176,6 +206,7 @@ export const {
   setUserLikeData,
   clearUserData,
   setCatData,
+  setCookies
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

@@ -3,13 +3,15 @@ import PlaylistCard from "@/components/PlaylistCard"; // Import your PlaylistCar
 import "./index.css";
 
 interface Playlist {
-  imageSrc: string;
-  title: string;
+  coverImgUrl: string;
+  blurPicUrl: string;
+  name: string;
+  id: number;
 }
 
 interface PlaylistGridProps {
   playlists: Playlist[]; // Array of playlists to display
-  onCardClick: (title: string) => void; // Callback for card clicks
+  onCardClick: (name: string) => void; // Callback for card clicks
   style?: CSSProperties
 }
 
@@ -19,9 +21,9 @@ const PlaylistGrid: React.FC<PlaylistGridProps> = ({ playlists, onCardClick, sty
       {playlists.map((playlist, index) => (
         <PlaylistCard
           key={index}
-          imageSrc={playlist.imageSrc}
-          title={playlist.title}
-          onClick={() => onCardClick(playlist.title)} playlistId={0}/>
+          imageSrc={playlist.coverImgUrl || playlist.blurPicUrl}
+          title={playlist.name}
+          onClick={() => onCardClick(playlist.name)} playlistId={playlist.id}/>
       ))}
     </div>
   );

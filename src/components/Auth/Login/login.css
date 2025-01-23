@@ -18,6 +18,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 20px;
+}
+
+.other-operation {
+  outline: none;
+  color: #1677ff;
+  cursor: pointer;
 }
 
 .close {

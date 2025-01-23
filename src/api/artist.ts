@@ -33,8 +33,8 @@ export const artistTypeList = (
  */
 export const artistDetail = (id: number) => {
   return request({
-    url: "/artist/detail",
-    params: { id },
+    url: "/artist/details",
+    params: { artistId: id },
   });
 };
 
@@ -44,8 +44,8 @@ export const artistDetail = (id: number) => {
  */
 export const artistHotSongs = (id: number) => {
   return request({
-    url: "/artists",
-    params: { id },
+    url: "/artist/top/songs",
+    params: { artistId: id },
   });
 };
 
@@ -64,7 +64,8 @@ export const artistAllSongs = (
 ) => {
   return request({
     url: "/artist/songs",
-    params: { id, limit, offset, order },
+    data: { ArtistId: id, limit, offset, order },
+    method: 'post'
   });
 };
 
@@ -76,8 +77,9 @@ export const artistAllSongs = (
  */
 export const artistAblums = (id: number, limit: number = 50, offset: number = 0) => {
   return request({
-    url: "/artist/album",
-    params: { id, limit, offset },
+    url: "/Album/ArtistAlbums",
+    data: { ArtistId: id, limit, offset },
+    method: 'post'
   });
 };
 

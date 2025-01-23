@@ -63,7 +63,8 @@ export const allCatlistPlaylist = (
   const url = hq ? "/top/playlist/highquality" : "/top/playlist";
   return request({
     url,
-    params: { cat, limit, offset, ...(hq && { before }), timestamp: Date.now() },
+    data: { cat, limit, offset, ...(hq && { before }), timestamp: Date.now() },
+    method: 'post'
   });
 };
 
