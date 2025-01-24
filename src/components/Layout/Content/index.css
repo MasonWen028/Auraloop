@@ -6,6 +6,7 @@
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+  user-select: none;
 }
 
 /* Hide the scrollbar for Webkit browsers (e.g., Chrome, Edge, Safari) */

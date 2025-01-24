@@ -2,12 +2,12 @@ import { songLevelData } from "@/utils/meta";
 import request from "@/utils/request";
 
 // 获取歌曲详情
-export const songDetail = (ids: number | number[]) => {
+export const songDetail = (ids: number[]) => {
   return request({
     url: "/song/detail",
     method: "post",
     params: { timestamp: Date.now() },
-    data: { ids: Array.isArray(ids) ? ids.join(",") : ids.toString() },
+    data: { ids },
   });
 };
 

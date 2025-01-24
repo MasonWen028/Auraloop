@@ -12,9 +12,6 @@ const PlayerBar: React.FC = () => {
 
   const [favoriteSongIds, setFavoriteSongIds] = useState<number[]>([]);
 
-  console.log(showSongInfo);
-  console.log(playBar);
-
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(69);
   const duration = 282;
@@ -72,8 +69,18 @@ const PlayerBar: React.FC = () => {
   const mockSong: SongItem = {
     id: 1,
     name: "爱就一个字",
-    artists: "张信哲",
-    album: "Album Name",
+    artists: [{
+      id: 0,
+      name: "张信哲",
+      avatar: 'https://p1.music.126.net/sixunTcvD_IXeVqxZnpHkA==/109951163452086313.jpg?param=200y200',
+      cover: '',
+      briefDesc: ''
+    }],
+    album: {
+      id: 1,
+      name: '',
+      cover: ''
+    },
     cover: "https://p1.music.126.net/sixunTcvD_IXeVqxZnpHkA==/109951163452086313.jpg?param=200y200",
     duration: 240,
     free: 0,

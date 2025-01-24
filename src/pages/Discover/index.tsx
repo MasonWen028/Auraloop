@@ -8,19 +8,21 @@ import SongTable from "@/components/SongTable";
 import { AlbumType, ArtistType } from "@/types/main";
 import { allCatlistPlaylist } from "@/api/playlist";
 import { newSongs, personalized } from "@/api/rec";
+import Loading from "@/components/Loading";
 
 const Discover: React.FC = () => {
   const [playlist, setPlaylist] = useState([]);
 
   const [songs, setSongs] = useState([]);
 
+  const [playlistLoading, setPlaylistLoading] = useState(true);
+  const [songLoading, setSongLoading] = useState(true);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         GetAllPlaylist();
         GetTopSongs(0);
-
-
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -29,21 +31,27 @@ const Discover: React.FC = () => {
   }, []);
 
   const GetAllPlaylist = async () => {
+    setPlaylistLoading(true);
     const result = await allCatlistPlaylist("全部歌单", 10, 0, false, 0);
     setPlaylist(result.playlists);
+    setPlaylistLoading(false);
   }
 
   const GetTopSongs = async (type: 0 | 7 | 96 | 16 | 8 = 0) => {
+    setSongLoading(true);
     const result = await newSongs(type);
     setSongs(result.data);
+    setSongLoading(false);
   }
 
   const GetPersibalizedSongs = async () => {
+    setSongLoading(true);
     const result = await personalized("newsong");
     const songsArray = result.result
     .filter((item: any) => item.song) // Ensure the `song` field exists
     .map((item: any) => item.song);
     setSongs(songsArray);
+    setSongLoading(false);
   }
 
   const handleCardClick = (title: string) => {
@@ -75,13 +83,18 @@ const Discover: React.FC = () => {
         Recommended Playlist
         <RightOutlined style={{color: 'rgb(93,93,93)'}}/>
       </div>
-      <PlaylistGrid style={{marginTop: 20}} playlists={playlist} onCardClick={handleCardClick} />
+      <Loading style={{minHeight: 420, marginTop: 20}} loading={playlistLoading}>
+        <PlaylistGrid playlists={playlist} />
+      </Loading>
       <Tabs
         tabs={["Top Hits", "New Releases", "Western Hits"]}
         onTabChange={handleTabChange}
       />
-      <PlayAllButton style={{marginTop: 8}} text="Play All" count={songs.length} onClick={handlePlayAllClick}/>
-      <SongTable style={{marginTop: 20}} songs={songs}/>
+      <Loading style={{minHeight: 250, marginTop: 20}} loading={songLoading}>
+        <PlayAllButton style={{marginTop: 8}} text="Play All" count={songs.length} onClick={handlePlayAllClick}/>
+        <SongTable songs={songs}/>
+      </Loading>
+      
     </>
   );
 };

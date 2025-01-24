@@ -23,6 +23,7 @@ function App() {
               <Routes>
                 <Route path="/recommended" element={<Song />} />
                 <Route path="/discover" element={<Discover />} />
+                <Route path="/discover" element={<Discover />} />
                 <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
                 <Route path="/artist/:artistId" element={<Artist />} />
                 <Route path="/artist/:id/songs" element={<ArtistSongs />} />

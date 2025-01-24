@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import { artistAblums, artistDetail, artistHotSongs } from '@/api/artist';
 import { useEffect, useState } from 'react';
 import ImageWithSkeleton from '@/components/ImageWithSkeleton';
+import Loading from '@/components/Loading';
 
 const Artist = () => {
   const [artist, setArtist] = useState<ArtistType>();
@@ -17,6 +18,9 @@ const Artist = () => {
   const [playlist, setPlaylist] =  useState([]);
 
   const [songs, setSongs] = useState<SongItem[]>([]);
+
+  const [songLoading, setSongLoading] = useState(true);
+  const [albumLoading, setAlbumLoading] = useState(true);
 
   const handleCardClick = (title: string) => {
     console.log(`You clicked on playlist: ${title}`);
@@ -39,13 +43,17 @@ const Artist = () => {
   }
 
   const getAritstHotSongs = async () => {
+    setSongLoading(true);
     const result = await artistHotSongs(numericId);
     setSongs(result.songs.slice(0, 5));
+    setSongLoading(false);
   };
 
   const getAritstHotAlbums = async () => {
+    setAlbumLoading(true);
     const result = await artistAblums(numericId);
     setPlaylist(result.hotAlbums);
+    setAlbumLoading(false);
   }
 
   useEffect(() => {
@@ -92,20 +100,21 @@ const Artist = () => {
       </div>
       <div className="artist-songs">
         <div className='text'>Hot Hits</div>
-        <PlayAllButton text={`Play All`} count={songs.length} />        
+        <PlayAllButton text={`Play All`} count={songs.length} disabled={songLoading}/>        
       </div>
-      <SongTable songs={songs}/>
-      <Link to={`/artist/${artistId}/songs`}>
+      <Loading style={{height: 500}} loading={songLoading && albumLoading}>
+        <SongTable songs={songs}/>
+        <Link to={`/artist/${artistId}/songs`}>
         <div className="show-all-hits">
           Show All
           <RightOutlined style={{color: 'rgb(93,93,93)'}}/>
         </div>
-      </Link>
-      
-      <div className="artist-songs">
-        <div className='text'>Hot Albums</div>      
-      </div>
-      <PlaylistGrid style={{marginTop: 20}} playlists={playlist} onCardClick={handleCardClick} />
+        </Link>
+        <div className="artist-songs">
+            <div className='text'>Hot Albums</div>      
+        </div>
+        <PlaylistGrid playlists={playlist} />
+      </Loading>
     </div>
   );
 };

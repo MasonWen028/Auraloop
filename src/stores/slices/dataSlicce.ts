@@ -142,7 +142,7 @@ const dataSlice = createSlice({
     },
 
     // Set "liked" album
-    setLikeAlbumList(state, action: PayloadAction<CoverType[]>) {
+    setLikeAlbumList(state, action: PayloadAction<AlbumType[]>) {
       state.userLikeData.albums = action.payload;
       userDB.setItem("userLikeData", JSON.parse(JSON.stringify(state.userLikeData)));
     },

@@ -5,7 +5,7 @@ export const playlistDetail = (id: number) => {
   return request({
     url: "/playlist/detail",
     data: {
-      id,
+      PlaylistId: id,
       s: 8, 
       n: 10000, // 去除返回 privileges
       timestamp: Date.now(),

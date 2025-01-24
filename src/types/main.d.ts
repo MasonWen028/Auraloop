@@ -166,13 +166,14 @@ export interface UserDataType {
   createdPlaylistCount?: number;
   cookies?: string;
   loginType?: 0 | 1 | 2;
+  nickname?: string;
 }
 
 export interface UserLikeDataType {
   songs: number[];
   playlists: PlaylistType[];
   artists: ArtistType[];
-  albums: CoverType[];
+  albums: AlbumType[];
   mvs: CoverType[];
   djs: CoverType[];
 }
@@ -198,6 +199,10 @@ export type AlbumType = {
   description?: string;
   releaseDate?: string;
   songCount?: number;
+  coverImgUrl?: string;
+  creator?: UserDataType;
+  subscribedCount?: number;
+  picUrl?: string;
 };
 
 

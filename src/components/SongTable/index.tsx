@@ -48,7 +48,6 @@ const SongTable: React.FC<SongTableProps> = ({ songs, style, inAlbum }) => {
 
   return (
     <div className={`song-table`} style={style}>
-      <Loading loading={true}/>
       {/* Render table header dynamically */}
       <div className="song-table-header">
         <div className="holder"></div>

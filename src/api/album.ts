@@ -2,7 +2,7 @@ import request from "@/utils/request";
 
 // 获取专辑详情
 export const albumDetail = (id: number) => {
-  return request({ url: "/album", params: { id } });
+  return request({ url: "/album/detail", params: { id } });
 };
 
 // 收藏/取消收藏专辑
