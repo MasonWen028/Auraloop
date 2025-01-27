@@ -6,11 +6,9 @@ import {
   CrownOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import { Provider, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Login from '@/components/Auth/Login';
-import store from '@/stores';
-import { updateUserData } from '@/utils/auth';
-import { createSelector } from '@reduxjs/toolkit';
+import { updateUserData, updateUserDataWithoutDetails } from '@/utils/auth';
 
 
 
@@ -52,17 +50,13 @@ const items: MenuProps['items'] = [
 
 const ProfileDropdown: React.FC = () => { 
   
-
-  const { userLoginStatus } = useSelector((state: any) => state.data);
-
-  const { userData } = useSelector((state: any) => state.data);
+  const { userData, userLoginStatus } = useSelector((state: any) => state.data);
 
   const hasUpdated = useRef<boolean>(false);
 
-
   useEffect(() => {
     if (userLoginStatus && userData?.userId  && !hasUpdated.current) {
-      updateUserData();
+      updateUserDataWithoutDetails();
       hasUpdated.current = true;
     }
   }, [userLoginStatus, userData]);

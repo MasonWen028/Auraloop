@@ -1,8 +1,8 @@
-import { dailyRecommend } from "@/api/rec";
+import { dailyRecommend, personalFm } from "@/api/rec";
 import { userAccount, userAlbum, userArtist, userDetail, userLike, userPlaylist, userSubcount } from "@/api/user";
 import store from "@/stores";
-import { setUserData, setCookies, setLikeAlbumList, setLikeSongsList, setLikePlaylist, setLikeArtistList } from "@/stores/slices/dataSlicce";
-import { updatePlaySong } from "@/stores/slices/musicSlice";
+import { setUserData, setCookies, setLikeAlbumList, setLikeSongsList, setLikePlaylist, setLikeArtistList, setPlayList, setPlaylistType } from "@/stores/slices/dataSlicce";
+import { setDailySongsData } from "@/stores/slices/musicSlice";
 
 /**
  * 用户是否登录
@@ -45,11 +45,19 @@ export const updateUserData = async () => {
       mvCount: subcountData.mvCount,
       subPlaylistCount: subcountData.subPlaylistCount,
       createdPlaylistCount: subcountData.createdPlaylistCount,
-    
     }));
-    
+    await updateUserDataWithoutDetails();
+  } catch (error) {
+    console.error("❌ Error updating user data:", error);
+    throw error;
+  }
+};
+
+export const updateUserDataWithoutDetails = async () => {
+  try {
     // 获取用户喜欢数据
     const allUserLikeResult: PromiseSettledResult<void>[] = await Promise.allSettled([
+      updatePersonalizedFm(),
       updateUserLikeSongs(),
       updateUserLikePlaylist(),
       updateUserLikeArtists(),
@@ -62,8 +70,21 @@ export const updateUserData = async () => {
     console.error("❌ Error updating user data:", error);
     throw error;
   }
-};
+}
 
+
+const updatePersonalizedFm = async () => {
+  const { userData, userLoginStatus } = store.getState().data;
+
+  if (!userLoginStatus || !userData.userId) return; 
+  
+  const result = await personalFm();
+
+  store.dispatch(setPlaylistType(0));
+
+  store.dispatch(setPlayList(result.data));
+
+}
 
   // 更新用户喜欢歌曲
   export const updateUserLikeSongs = async () => {
@@ -112,5 +133,5 @@ export const updateDailySongsData = async () => {
   if (!userLoginStatus || !userData.userId) return;
 
   const result = await dailyRecommend("songs");
-  store.dispatch(updatePlaySong(result.data.dailySongs));
+  store.dispatch(setDailySongsData(result.data.dailySongs));
 }

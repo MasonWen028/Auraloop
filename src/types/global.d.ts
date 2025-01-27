@@ -12,4 +12,5 @@ interface Window {
       // If attempted to use, it will show as missing from the type definition
     };
   };
+  player: Howl
 }

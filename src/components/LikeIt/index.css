@@ -2,9 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 33%;
-  height: 24px;
   cursor: pointer;
+  flex-direction: column
 }
 
 .oper-item:last-child {
@@ -12,7 +11,6 @@
 }
 
 .oper-item .heart {
-  height: 20px;
   position: relative;
   display: inline-block;
 }
@@ -26,10 +24,4 @@
 
 .heart svg {
   stroke: #e05b5b;
-}
-
-.oper-text {
-  margin-left: 12px;
-  font-size: 13px;
-  user-select: none;
 }

@@ -92,10 +92,7 @@ export const newAlbumsAll = (
 // 私人 FM
 export const personalFm = () => {
   return request({
-    url: "/personal_fm",
-    params: {
-      timestamp: Date.now(),
-    },
+    url: "personalized/personalfm"
   });
 };
 

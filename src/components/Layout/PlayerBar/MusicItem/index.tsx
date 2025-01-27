@@ -53,7 +53,7 @@ const MusicItem: React.FC<MusicItemProps> = ({ song, isFavorite, onFavoriteToggl
             <span>{name}</span>
           )}
         </div>
-        <div className="artist-name">{artists}</div>
+        <div className="artist-name">{artists[0].name}</div>
       </div>
 
       <div className="favorite-icon">

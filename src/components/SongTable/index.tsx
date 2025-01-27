@@ -1,7 +1,6 @@
 import React, { CSSProperties, useMemo, useState } from "react";
 import "./index.css";
 import RoundPlay from "../SvgIcon/RoundPlay";
-import More from "../SvgIcon/More";
 import { useDispatch, useSelector } from "react-redux";
 import Playing from "../SvgIcon/Playing";
 import PlayPaused from "../SvgIcon/PlayPaused";
@@ -10,11 +9,9 @@ import { setCurrentSongId, setStatus } from "@/stores/slices/statusSlice";
 import LikeIt from "../LikeIt";
 import { Link } from "react-router-dom";
 import SongActions from "../SongActions";
-import { SongItem } from "@/types/main";
-import Loading from "../Loading";
-
+import { SongType } from "@/types/main";
 interface SongTableProps {
-  songs: SongItem[];
+  songs: SongType[];
   style?: CSSProperties;
   inAlbum?: boolean
 }

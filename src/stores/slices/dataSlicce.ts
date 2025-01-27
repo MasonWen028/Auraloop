@@ -19,6 +19,7 @@ const userDB = localforage.createInstance({
 // Define the initial state
 let initialState: ListState = {
   playList: [] as SongItem[],
+  playlistType: 0,
   historyList: [] as SongItem[],
   searchHistory: [],
   localPlayList: [],
@@ -72,10 +73,11 @@ async function loadUserData() {
     if (userDataList.userData) {
       initialState = {...initialState, userData: userDataList.userData,userLoginStatus: true }
     }
-
+    
     if (userDataList.userLikeData) {
       initialState = {...initialState, userLikeData: userDataList.userLikeData as any}
     }
+    console.log("[DATA ON DB]", initialState);
   } catch (error) {
     console.error("Error loading data from userDB:", error);
   }
@@ -90,15 +92,21 @@ const dataSlice = createSlice({
   reducers: {
     setUserData(state, action: PayloadAction<UserDataType>) {
       state.userData =  {...state.userData, ...action.payload};
+
+      console.log(state.userData);
       userDB.setItem("userData", state.userData);
     },
     setCookies(state, action: PayloadAction<string>) {
       state.userData = {...state.userData, cookies: action.payload};
     },
     // Set the playlist
-    setPlayList(state, action: PayloadAction<any[]>) {
+    setPlayList(state, action: PayloadAction<SongItem[]>) {
       state.playList = action.payload;
-      musicDB.setItem("playList", action.payload); // Persist in localForage
+      userDB.setItem("playList", action.payload);
+    },
+    setPlaylistType(state, action: PayloadAction<0 | 1>) {
+      state.playlistType = action.payload;
+      userDB.setItem("playlistType", action.payload);
     },
 
     // Add a song to the playlist
@@ -156,6 +164,7 @@ const dataSlice = createSlice({
     // Set user login status
     setUserLoginStatus(state, action: PayloadAction<boolean>) {
       state.userLoginStatus = action.payload;
+      userDB.setItem("userLoginStatus", action.payload);
     },
     // Set user liked data
     setUserLikeData(state, action: PayloadAction<any>) {
@@ -192,6 +201,7 @@ const dataSlice = createSlice({
 });
 
 export const {
+  setPlaylistType,
   setPlayList,
   setLikePlaylist,
   setLikeAlbumList,

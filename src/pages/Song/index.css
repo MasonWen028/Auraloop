@@ -1,0 +1,228 @@
+.full-player {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgb(var(--main-color));
+  background-color: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(80px);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.full-player .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.full-player .overlay::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+}
+
+.full-player .overlay.blur {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-player .overlay.blur .overlay-img {
+  width: 100%;
+  height: auto;
+  transform: scale(1.5);
+  filter: blur(80px) contrast(1.2);
+}
+
+.full-player .lrc-instant {
+  position: absolute;
+  top: 0;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.full-player .lrc-instant .lrc {
+  font-size: 18px;
+}
+
+.full-player .lrc-instant .lrc-tran {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.full-player .player-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: calc(100vh - 160px);
+  z-index: 0;
+}
+
+.full-player .player-content .content-left {
+  flex: 1;
+  min-width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.3s;
+}
+
+.full-player .player-content .content-right {
+  flex: 1;
+  height: 100%;
+  max-width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.full-player .player-content .content-right .player-data {
+  margin-top: 0;
+  margin-bottom: 26px;
+}
+
+.full-player .player-content.pure .content-right {
+  align-items: center;
+  max-width: 100%;
+}
+
+.full-player .player-content.show-comment .content-left {
+  min-width: 40vw;
+  max-width: 50vh;
+  padding: 0 60px;
+}
+
+.full-player .player-content.show-comment .content-left .player-cover,
+.full-player .player-content.show-comment .content-left .player-data {
+  width: 100%;
+}
+
+.full-player .player-content.show-comment .content-left .player-cover.record .cover-img {
+  width: 100%;
+  height: 100%;
+  min-width: auto;
+}
+
+.full-player .player-content.show-comment .content-left .player-cover.record .pointer {
+  top: -13.5vh;
+}
+
+.player-cover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  max-width: 50vh;
+  height: auto;
+  aspect-ratio: 1/1;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s;
+}
+
+.player-cover.cover {
+  border-radius: 32px;
+  overflow: hidden;
+  transform: scale(0.9);
+}
+
+.player-cover .dynamic-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 32px;
+  overflow: hidden;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.player-cover .dynamic-cover.loaded {
+  opacity: 1;
+}
+
+.cover-loading {
+  position: absolute;
+  height: 100%;
+  padding-bottom: 0;
+}
+
+.player-data {
+  display: flex;
+  flex-direction: row;
+  width: 70%;
+  max-width: 50vh;
+  margin-top: 24px;
+  padding: 0 2px;
+}
+
+.player-data .name {
+  margin-right: 15px;
+  display: flex;
+  align-items: flex-start;
+  margin-left: 4px;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.player-data .like {
+  font-size: 32px;
+
+}
+
+.player-data .name .name-text {  
+  font-size: 26px;
+  white-space: nowrap;
+  font-weight: bold;
+  line-clamp: 1;
+  -webkit-line-clamp: 1;
+  animation: scrollText 20s linear infinite;
+}
+
+.player-data .name .name-text.no-scroll {
+  animation: none;
+}
+
+.text-hidden {
+  display: -webkit-box;
+  overflow: hidden;
+  word-break: break-all;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.artist-name {
+  cursor: pointer;
+}
+
+.artist-name:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+

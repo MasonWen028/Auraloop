@@ -1,23 +1,18 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { LyricLine } from "@applemusic-like-lyrics/core";
-import type { SongItem as SongType, LyricType } from "@/types/main";
+import { SongType } from "@/types/main";
+import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
 
-// Default music data
-const defaultMusicData: SongType = {
-  id: 0,
-  name: "未播放歌曲",
-  artists: [],
-  album: {} as any,
-  cover: "/images/song.jpg?assest",
-  duration: 0,
-  free: 0,
-  mv: null,
-  type: "song",
-  ar: [],
-  al: {} as any,
-};
+// Define TypeScript interfaces
+interface LyricLine {
+  // Define properties for LyricLine
+}
 
-// Define initial state
+
+
+interface LyricType {
+  time: number;
+  text: string;
+}
+
 interface MusicState {
   playSong: SongType;
   playPlaylistId: number;
@@ -35,8 +30,23 @@ interface MusicState {
     timestamp: number | null;
     list: SongType[];
   };
+  songCover: string
 }
 
+// Default music data
+const defaultMusicData: SongType = {
+  id: 0,
+  name: "未播放歌曲",
+  artists: "未知歌手",
+  album: "未知专辑",
+  cover: "/images/song.jpg?assest",
+  duration: 0,
+  free: 0,
+  mv: null,
+  type: "song",
+};
+
+// Initial state
 const initialState: MusicState = {
   playSong: { ...defaultMusicData },
   playPlaylistId: 0,
@@ -54,9 +64,10 @@ const initialState: MusicState = {
     timestamp: null,
     list: [],
   },
+  songCover: ''
 };
 
-// Create slice
+// Redux slice
 const musicSlice = createSlice({
   name: "music",
   initialState,
@@ -71,63 +82,45 @@ const musicSlice = createSlice({
         yrcAMData: [],
       };
     },
-
-    // Update playSong
-    updatePlaySong(state, action: PayloadAction<SongType>) {
+    // Set the current song
+    setPlaySong(state, action: PayloadAction<SongType>) {
       state.playSong = action.payload;
     },
-
-    // Update playPlaylistId
-    updatePlayPlaylistId(state, action: PayloadAction<number>) {
+    // Set the playlist ID
+    setPlayPlaylistId(state, action: PayloadAction<number>) {
       state.playPlaylistId = action.payload;
     },
-
-    // Update personal FM data
-    updatePersonalFM(state, action: PayloadAction<{ playIndex: number; list: SongType[] }>) {
+    // Set song lyrics
+    setSongLyric(state, action: PayloadAction<MusicState["songLyric"]>) {
+      state.songLyric = action.payload;
+    },
+    // Set personal FM data
+    setPersonalFM(state, action: PayloadAction<MusicState["personalFM"]>) {
       state.personalFM = action.payload;
     },
-
-    // Update daily songs data
-    updateDailySongsData(state, action: PayloadAction<{ timestamp: number | null; list: SongType[] }>) {
+    // Set daily songs data
+    setDailySongsData(state, action: PayloadAction<MusicState["dailySongsData"]>) {
       state.dailySongsData = action.payload;
     },
   },
 });
 
-// Selectors (equivalent to getters in Pinia)
-export const selectPlaySong = (state: { music: MusicState }) => state.music.playSong;
-export const selectSongLyric = (state: { music: MusicState }) => state.music.songLyric;
-export const selectPersonalFM = (state: { music: MusicState }) => state.music.personalFM;
-export const selectDailySongsData = (state: { music: MusicState }) => state.music.dailySongsData;
-export const selectPlayPlaylistId = (state: { music: MusicState }) => state.music.playPlaylistId;
-
-// Derived selectors (computed properties)
-export const selectIsHasLrc = (state: { music: MusicState }) =>
-  state.music.songLyric.lrcData.length > 0 && state.music.playSong.type !== "radio";
-
-export const selectIsHasYrc = (state: { music: MusicState }) =>
-  state.music.songLyric.yrcData.length > 0;
-
-export const selectIsHasPlayer = (state: { music: MusicState }) =>
-  state.music.playSong.id !== 0;
-
-export const selectSongCover = (state: { music: MusicState }, size: "s" | "m" | "l" | "xl" | "cover" = "s") =>
-  state.music.playSong.path
-    ? state.music.playSong.cover
-    : size === "cover"
-    ? state.music.playSong.cover
-    : state.music.playSong.coverSize?.[size] || state.music.playSong.cover;
-
-export const selectPersonalFMSong = (state: { music: MusicState }) =>
-  state.music.personalFM.list?.[state.music.personalFM.playIndex] || defaultMusicData;
-
-// Export actions and reducer
+// Export actions
 export const {
   resetMusicData,
-  updatePlaySong,
-  updatePlayPlaylistId,
-  updatePersonalFM,
-  updateDailySongsData,
+  setPlaySong,
+  setPlayPlaylistId,
+  setSongLyric,
+  setPersonalFM,
+  setDailySongsData,
 } = musicSlice.actions;
+
+// Selectors
+export const selectPlaySong = (state: { music: MusicState }) => state.music.playSong;
+export const selectPlayPlaylistId = (state: { music: MusicState }) => state.music.playPlaylistId;
+export const selectSongLyric = (state: { music: MusicState }) => state.music.songLyric;
+export const selectPersonalFM = (state: { music: MusicState }) => state.music.personalFM;
+export const selectDailySongsData = (state: { music: MusicState }) =>
+  state.music.dailySongsData;
 
 export default musicSlice.reducer;

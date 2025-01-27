@@ -29,7 +29,9 @@ async function loadInitialData(): Promise<CountryGroup[]> {
 }
 
 // Load data and replace the initial state if found
-await (async () => {
+
+
+(async () => {
   const data = await loadInitialData();
   initialState = data;
 })();

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo, CSSProperties } from 'react';
+import { useRef, useState, useEffect, useMemo, CSSProperties, ReactNode } from 'react';
 import mojs from '@mojs/core';
 import './index.css';
 
@@ -11,10 +11,12 @@ interface HeartRefElement extends HTMLDivElement {
 interface LikeItProps {
   isLiked: boolean; // Initial liked state
   onLikeToggle?: (liked: boolean) => void; // Callback to handle like/unlike
-  style?: CSSProperties;
+  style?: CSSProperties;  
+  children?: ReactNode;
+  tipStyle?: CSSProperties;
 }
 
-const LikeIt: React.FC<LikeItProps> = ({ isLiked, onLikeToggle, style }) => {
+const LikeIt: React.FC<LikeItProps> = ({ isLiked, onLikeToggle, style, children, tipStyle }) => {
   const [hearted, setHearted] = useState(isLiked);
   const [heartP, setHeartP] = useState(1);
 
@@ -110,6 +112,7 @@ const LikeIt: React.FC<LikeItProps> = ({ isLiked, onLikeToggle, style }) => {
           <path d="M0 0h1024v1024H0z" opacity=".01"/><path d="M281.6 51.2C126.0544 51.2 0 183.4496 0 346.5216 0 641.8432 332.8 910.336 512 972.8c179.2-62.464 512-330.9568 512-626.2784C1024 183.4496 897.9456 51.2 742.4 51.2c-95.232 0-179.456 49.5616-230.4 125.44C461.056 100.8128 376.832 51.2 281.6 51.2z"/>
         </svg>
       </div>
+      {children && <div className='tips' style={tipStyle}>{children}</div>}
     </div>
   );
 };

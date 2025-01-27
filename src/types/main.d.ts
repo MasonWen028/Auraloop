@@ -1,18 +1,25 @@
 // src/types/MusicItem.ts
 
-export interface SongItem {
+export type MetaData = {
   id: number;
   name: string;
-  artists: ArtistType[];
-  album: AlbumType;
-  dj?: object;
+  cover?: string;
+  alias?: string[];
+};
+
+export type SongType = {
+  id: number;
+  name: string;
+  artists: MetaData[] | string;
+  album: MetaData | string;
+  dj?: DjData;
   cover: string;
   coverSize?: CoverSize;
   duration: number;
-  // 0: Unknown | 1: Original song | 2: Cover
+  // 0: 未知 | 1: 原曲 | 2: 翻唱
   originCoverType?: number;
   alia?: string;
- // 0: Free or copyright-free | 1: VIP songs | 4: Purchase albums | 8: Non-members can play low-quality songs for free, members can play high-quality songs and download them
+  // 0: 免费或无版权 | 1: VIP 歌曲 | 4: 购买专辑 | 8: 非会员可免费播放低音质，会员可播放高音质及下载
   free: 0 | 1 | 4 | 8;
   mv: number | null;
   path?: string;
@@ -22,8 +29,7 @@ export interface SongItem {
   createTime?: number;
   updateTime?: number;
   playCount?: number;
-  ar: ArtistType[];
-  al: AlbumType;
+  // 歌曲类型
   type: "song" | "radio";
 };
 
@@ -35,7 +41,7 @@ export type CoverType = {
   coverSize?: CoverSize;
   description?: string;
   creator?: UserType;
-  artists?: string;
+  artists?: MetaData[] | string;
   tags?: string[];
   userId?: number | null;
   count?: number;
@@ -56,10 +62,10 @@ export type CoverType = {
   }[];
 };
 
+// Artist
 export type ArtistType = {
   id: number;
   name: string;
-  avatar: string;
   cover: string;
   coverSize?: CoverSize;
   alia?: string;
@@ -69,7 +75,6 @@ export type ArtistType = {
   musicSize?: number;
   mvSize?: number;
   fansSize?: number;
-  briefDesc: string;
 };
 
 export type CommentType = {
@@ -372,6 +377,7 @@ interface SettingState {
 
 interface ListState {
   playList: SongType[];
+  playlistType: 0 | 1;
   historyList: SongType[];
   cloudPlayList: SongType[];
   searchHistory: string[];
