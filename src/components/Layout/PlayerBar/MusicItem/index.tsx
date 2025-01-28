@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './index.css';
-import { SongItem } from '@/types/main';
+import { SongType } from '@/types/main';
 import LikeIt from '@/components/LikeIt';
 import HoverImage from '@/components/HoverImage';
+import { Link } from 'react-router-dom';
 
 interface MusicItemProps {
-  song: SongItem;
+  song: SongType;
   isFavorite: boolean;
   onFavoriteToggle: (id: number) => void;
 }
@@ -53,7 +54,24 @@ const MusicItem: React.FC<MusicItemProps> = ({ song, isFavorite, onFavoriteToggl
             <span>{name}</span>
           )}
         </div>
-        <div className="artist-name">{artists[0].name}</div>
+        <div className="artist-name">
+        <div>
+            { Array.isArray(artists) ?
+              artists.map((artist, index) => (
+                <React.Fragment key={artist.id}>
+                  <Link
+                    className="artist-name"
+                    style={{ color: 'inherit' }}
+                    to={`/artist/${artist.id}`}
+                  >
+                    {artist.name}
+                  </Link>
+                  {index < artists.length - 1 && ', '}
+                </React.Fragment>
+              )): <span>{artists}</span>
+            }
+          </div>
+        </div>
       </div>
 
       <div className="favorite-icon">

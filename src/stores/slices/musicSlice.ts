@@ -1,4 +1,4 @@
-import { SongType } from "@/types/main";
+import { LyricType, SongType } from "@/types/main";
 import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
 
 // Define TypeScript interfaces
@@ -6,12 +6,6 @@ interface LyricLine {
   // Define properties for LyricLine
 }
 
-
-
-interface LyricType {
-  time: number;
-  text: string;
-}
 
 interface MusicState {
   playSong: SongType;
@@ -85,6 +79,7 @@ const musicSlice = createSlice({
     // Set the current song
     setPlaySong(state, action: PayloadAction<SongType>) {
       state.playSong = action.payload;
+      console.log("[SET CURRENT SONG]", JSON.stringify(state.playSong));
     },
     // Set the playlist ID
     setPlayPlaylistId(state, action: PayloadAction<number>) {
@@ -101,12 +96,16 @@ const musicSlice = createSlice({
     // Set daily songs data
     setDailySongsData(state, action: PayloadAction<MusicState["dailySongsData"]>) {
       state.dailySongsData = action.payload;
-    },
+    },    
+    setPersonalFMIndex(state, action: PayloadAction<number>) {
+      state.personalFM.playIndex = action.payload;
+    }
   },
 });
 
 // Export actions
 export const {
+  setPersonalFMIndex,
   resetMusicData,
   setPlaySong,
   setPlayPlaylistId,

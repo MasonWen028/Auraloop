@@ -1,13 +1,14 @@
-import React, { useRef, useEffect, useMemo, useState } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import { LyricPlayer } from "@applemusic-like-lyrics/react";
 import { msToS } from "@/utils/time";
 import player from "@/utils/player";
+import { useSelector } from "react-redux";
 
 const LyricAM = () => {
-  const musicStore = useMusicStore();
-  const statusStore = useStatusStore();
-  const settingStore = useSettingStore();
-
+  const { songLyric } = useSelector((state: any) => state.music);
+  const { pureLyricMode, playStatus } = useSelector((state: any) => state.status);
+  const { useAMSpring, lyricsScrollPosition, lyricsBlur, lyricFontBold, LyricFont } = useSelector((state: any) => state.setting);
+ 
   const lyricPlayerRef = useRef(null);
 
   // Realtime playback progress
@@ -25,56 +26,53 @@ const LyricAM = () => {
     return () => cancelAnimationFrame(animationFrame);
   }, []);
 
-  // Main lyric color
-  const mainColor = useMemo(() => {
-    if (!statusStore.mainColor) return "rgb(239, 239, 239)";
-    return `rgb(${statusStore.mainColor})`;
-  }, [statusStore.mainColor]);
-
   // Current lyrics
   const amLyricsData = useMemo(() => {
     const isYrc =
-      musicStore.songLyric.yrcData?.length;
+      songLyric.yrcData?.length;
     return isYrc
-      ? musicStore.songLyric.yrcAMData
-      : musicStore.songLyric.lrcAMData;
+      ? songLyric.yrcAMData
+      : songLyric.lrcAMData;
   }, [
-    musicStore.songLyric.yrcData,
-    musicStore.songLyric.yrcAMData,
-    musicStore.songLyric.lrcAMData,
+    songLyric.yrcData,
+    songLyric.yrcAMData,
+    songLyric.lrcAMData,
   ]);
 
   // Seek jump
   const jumpSeek = (line: any) => {
-    if (!line?.line?.lyricLine?.startTime) return;
+    console.log(line);
+    if (!line?.line?.startTime) return;
     const time = msToS(line.line.lyricLine.startTime);
     player.setSeek(time);
     player.play();
   };
 
+  console.log(amLyricsData)
+
   return (
     <div
       key={amLyricsData?.[0]?.startTime}
-      className={`lyric-am ${statusStore.pureLyricMode ? "pure" : ""}`}
+      className={`lyric-am ${pureLyricMode ? "pure" : ""}`}
     >
       <LyricPlayer
         className="am-lyric"
         ref={lyricPlayerRef}
         lyricLines={amLyricsData}
         currentTime={playSeek}
-        playing={statusStore.playStatus}
-        enableSpring={settingStore.useAMSpring}
-        enableScale={settingStore.useAMSpring}
+        playing={playStatus}
+        enableSpring={useAMSpring}
+        enableScale={useAMSpring}
         alignPosition={
-          settingStore.lyricsScrollPosition === "center" ? 0.5 : 0.2
+          lyricsScrollPosition === "center" ? 0.5 : 0.2
         }
-        enableBlur={settingStore.lyricsBlur}
+        enableBlur={lyricsBlur}
         style={{
-          fontWeight: settingStore.lyricFontBold ? "bold" : "normal",
+          fontWeight: lyricFontBold ? "bold" : "normal",
           fontFamily:
-            settingStore.LyricFont !== "follow" ? settingStore.LyricFont : "",
+            LyricFont !== "follow" ? LyricFont : "",
         }}
-        onLineClick={jumpSeek}
+        onLyricLineClick={jumpSeek}
       />
     </div>
   );

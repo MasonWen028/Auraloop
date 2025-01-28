@@ -111,7 +111,7 @@ const LeftMenu: React.FC = () => {
   };
 
   const menuItems = [
-    { path: "/recommended", icon: <PlayCircleOutlined />, label: "Recommended" },
+    { path: "/", icon: <PlayCircleOutlined />, label: "Recommended" },
     { path: "/discover", icon: <Earphone />, label: "Discover" },
     { section: "My Music" },
     { path: "/album/favorites", icon: <HeartOutlined />, label: "Liked Songs" },

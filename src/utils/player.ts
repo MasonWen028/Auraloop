@@ -1,7 +1,6 @@
 import type { SongType, PlayModeType } from "@/types/main";
 import { Howl, Howler } from "howler";
 import { cloneDeep } from "lodash-es";
-import { useMusicStore, useStatusStore, useDataStore, useSettingStore } from "@/stores";
 import { parsedLyricsData, resetSongLyric, parseLocalLyric } from "./lyric";
 import { songUrl, unlockSongUrl, songLyric, songChorus } from "@/api/song";
 import { calculateProgress } from "./time";
@@ -15,9 +14,9 @@ import blob from "./blob";
 import { eventBus } from "@/utils/eventBus";
 import { message } from 'antd';
 import store from "@/stores";
-import { resetState, setCurrentState, setSpectrumsData } from "@/stores/slices/statusSlice";
-import { resetMusicData } from "@/stores/slices/musicSlice";
-import { setHistory } from "@/stores/slices/dataSlicce";
+import { resetState, setChorus, setCurrentState, setCurrentTime, setLyricIndex, setPersonalFmMode, setPlayHeartbeatMode, setPlayIndex, setPlayLoading, setPlayRate, setPlaySongMode, setPlayStatus, setPlayUblock, setPlayVolume, setPlayVolumeMute, setShowDesktopLyric, setSpectrumsData } from "@/stores/slices/statusSlice";
+import { resetMusicData, setPersonalFM, setPersonalFMIndex, setPlayPlaylistId, setPlaySong } from "@/stores/slices/musicSlice";
+import { setHistory, setNextPlaySong, setPlayList } from "@/stores/slices/dataSlicce";
 
 
 // 播放器核心
@@ -67,16 +66,19 @@ class Player {
    * 获取当前播放歌曲
    * @returns 当前播放歌曲
    */
-  private getPlaySongData(): SongType | null {    
-
+  private getPlaySongData(): SongType | null {
     const { playList } = store.getState().data;
     const { personalFM } = store.getState().music;
     const { personalFmMode, playIndex} = store.getState().status;
     
+    console.log("[MODE]", personalFM);
+    console.log("[SONG]", personalFM.list?.[personalFM.playIndex]);
     // 若为私人FM
     if (personalFmMode) {
       return personalFM.list?.[personalFM.playIndex] || defaultMusicData;
     }
+
+
     // 播放列表
     if (!playList.length) return null;
     return playList[playIndex];
@@ -86,8 +88,7 @@ class Player {
    * @returns 播放音量
    */
   private getFadeTime(): number {
-    const settingStore = useSettingStore();
-    const { songVolumeFade, songVolumeFadeTime } = settingStore;
+    const { songVolumeFade, songVolumeFadeTime } = store.getState().setting;
     return songVolumeFade ? songVolumeFadeTime : 0;
   }
   /**
@@ -364,42 +365,43 @@ class Player {
           typeof playSongData.album === "object"
           ? playSongData.album.name
           : String(playSongData.album),
-      artwork: smtcOutputHighQualityCover
-        ? [
-            {
-              src: this.getSongCover("xl"),
-              sizes: "1920x1920",
-              type: "image/jpeg",
-            },
-          ]
-        : [
-            {
-              src: this.getSongCover("cover"),
-              sizes: "512x512",
-              type: "image/jpeg",
-            },
-            {
-              src: this.getSongCover("s"),
-              sizes: "100x100",
-              type: "image/jpeg",
-            },
-            {
-              src: this.getSongCover("m"),
-              sizes: "300x300",
-              type: "image/jpeg",
-            },
-            {
-              src: this.getSongCover("l"),
-              sizes: "1024x1024",
-              type: "image/jpeg",
-            },
-            {
-              src: this.getSongCover("xl"),
-              sizes: "1920x1920",
-              type: "image/jpeg",
-            },
-          ],
+      // artwork: smtcOutputHighQualityCover
+      //   ? [
+      //       {
+      //         src: this.getSongCover("xl"),
+      //         sizes: "1920x1920",
+      //         type: "image/jpeg",
+      //       },
+      //     ]
+      //   : [
+      //       {
+      //         src: this.getSongCover("cover"),
+      //         sizes: "512x512",
+      //         type: "image/jpeg",
+      //       },
+      //       {
+      //         src: this.getSongCover("s"),
+      //         sizes: "100x100",
+      //         type: "image/jpeg",
+      //       },
+      //       {
+      //         src: this.getSongCover("m"),
+      //         sizes: "300x300",
+      //         type: "image/jpeg",
+      //       },
+      //       {
+      //         src: this.getSongCover("l"),
+      //         sizes: "1024x1024",
+      //         type: "image/jpeg",
+      //       },
+      //       {
+      //         src: this.getSongCover("xl"),
+      //         sizes: "1920x1920",
+      //         type: "image/jpeg",
+      //       },
+      //     ],
     };
+    console.log("METADATA", metaData);
     // 更新数据
     navigator.mediaSession.metadata = new window.MediaMetadata(metaData);
   }
@@ -437,23 +439,23 @@ class Player {
    * @param id 歌曲id
    */
   private async getChorus(id: number) {
-    const statusStore = useStatusStore();
+    const { duration } = store.getState().status;
     const result = await songChorus(id);
     if (result?.code !== 200 || result?.chorus?.length === 0) {
-      statusStore.chorus = 0;
+      store.dispatch(setChorus(0))
       return;
     }
     // 计算并保存
     const chorus = result?.chorus?.[0]?.startTime;
-    const time = ((chorus / 1000 / statusStore.duration) * 100).toFixed(2);
-    statusStore.chorus = Number(time);
+    const time = ((chorus / 1000 / duration) * 100).toFixed(2);
+    store.dispatch(setChorus(Number(time)));
   }
   /**
    * 播放错误
    * 在播放错误时，播放下一首
    */
   private async errorNext(errCode?: number) {
-    const dataStore = useDataStore();
+    const { playList } = store.getState().data;
     // 次数加一
     this.testNumber++;
     if (this.testNumber > 5) {
@@ -469,7 +471,7 @@ class Player {
       return;
     }
     // 播放下一曲
-    if (dataStore.playList.length > 1) {
+    if (playList.length > 1) {
       await this.nextOrPrev("next");
     } else {
       message.error("当前列表暂无可播放歌曲");
@@ -492,20 +494,20 @@ class Player {
    */
   private async parseLocalMusicInfo(path: string) {
     try {
-      const musicStore = useMusicStore();
+      const { playSong } = store.getState().music;
       // 获取封面数据
       const coverData = await window.electron.ipcRenderer.invoke("get-music-cover", path);
       if (coverData) {
         const { data, format } = coverData;
         const blobURL = blob.createBlobURL(data, format, path);
         if (blobURL) {
-          musicStore.playSong.cover = blobURL;
+          playSong.cover = blobURL;
         }
       } else {
-        musicStore.playSong.cover = "/images/song.jpg?assest";
+        playSong.cover = "/images/song.jpg?assest";
       }
       // 获取主色
-      this.getCoverColor(musicStore.playSong.cover);
+      this.getCoverColor(playSong.cover);
       // 获取歌词数据
       const lrcData = await window.electron.ipcRenderer.invoke("get-music-lyric", path);
       parseLocalLyric(lrcData);
@@ -543,19 +545,19 @@ class Player {
    * @param seek 播放位置
    */
   async initPlayer(autoPlay: boolean = true, seek: number = 0) {
-    const dataStore = useDataStore();
-    const musicStore = useMusicStore();
-    const statusStore = useStatusStore();
-    const settingStore = useSettingStore();
+    const { playList } = store.getState().data;
+    const { playIndex } = store.getState().status;
+    const { useSongUnlock } = store.getState().setting;
     try {
       // 获取播放数据
       const playSongData = this.getPlaySongData();
       if (!playSongData) return;
       const { id, dj, path, type } = playSongData;
       // 更改当前播放歌曲
-      musicStore.playSong = playSongData;
+      //playSong = playSongData;
+      store.dispatch(setPlaySong(playSongData))
       // 更改状态
-      statusStore.playLoading = true;
+      store.dispatch(setPlayLoading(true))
       // 本地歌曲
       if (path) {
         await this.createPlayer(path, autoPlay, seek);
@@ -563,27 +565,28 @@ class Player {
         await this.parseLocalMusicInfo(path);
       }
       // 在线歌曲
-      else if (id && dataStore.playList.length) {
+      else if (id && playList.length) {
         const songId = type === "radio" ? 0 : id; //todo dj?.id
         if (!songId) throw new Error("Get song id error");
         const url = await this.getOnlineUrl(songId);
         // 正常播放地址
         if (url) {
-          statusStore.playUblock = false;
+          store.dispatch(setPlayUblock(false));
           await this.createPlayer(url, autoPlay, seek);
         }
         // 尝试解灰
-        else if (isElectron && type !== "radio" && settingStore.useSongUnlock) {
+        else if (isElectron && type !== "radio" && useSongUnlock) {
           const unlockUrl = await this.getUnlockSongUrl(playSongData);
           if (unlockUrl) {
-            statusStore.playUblock = true;
+            store.dispatch(setPlayUblock(true));
             console.log("🎼 Song unlock successfully:", unlockUrl);
             await this.createPlayer(unlockUrl, autoPlay, seek);
           } else {
-            statusStore.playUblock = false;
+            store.dispatch(setPlayUblock(false));
             // 是否为最后一首
-            if (statusStore.playIndex === dataStore.playList.length - 1) {
-              statusStore.$patch({ playStatus: false, playLoading: false });
+            if (playIndex === playList.length - 1) {
+              store.dispatch(setPlayStatus(false))
+              store.dispatch(setPlayLoading(false))
               message.warning("当前列表歌曲无法播放，请更换歌曲");
             } else {
               message.error("该歌曲暂无音源，跳至下一首");
@@ -591,7 +594,7 @@ class Player {
             }
           }
         } else {
-          if (dataStore.playList.length === 1) {
+          if (playList.length === 1) {
             this.resetStatus();
             message.warning("当前播放列表已无可播放歌曲，请更换");
             return;
@@ -612,18 +615,20 @@ class Player {
    * 播放
    */
   async play() {
-    const statusStore = useStatusStore();
+    console.log('[START PLAY]')
+    const { playVolume } = store.getState().status;
+    console.log(playVolume)
     // 已在播放
     if (this.player.playing()) {
-      statusStore.playStatus = true;
+      store.dispatch(setPlayStatus(true))
       return;
     }
     this.player.play();
-    statusStore.playStatus = true;
+    store.dispatch(setPlayStatus(false))
     // 淡入
     await new Promise<void>((resolve) => {
       this.player.once("play", () => {
-        this.player.fade(0, statusStore.playVolume, this.getFadeTime());
+        this.player.fade(0, playVolume, this.getFadeTime());
         resolve();
       });
     });
@@ -633,7 +638,7 @@ class Player {
    * @param changeStatus 是否更改播放状态
    */
   async pause(changeStatus: boolean = true) {
-    const statusStore = useStatusStore();
+    const { playVolume } = store.getState().status;
 
     // 播放器未加载完成
     if (this.player.state() !== "loaded") {
@@ -642,10 +647,10 @@ class Player {
 
     // 淡出
     await new Promise<void>((resolve) => {
-      this.player.fade(statusStore.playVolume, 0, this.getFadeTime());
+      this.player.fade(playVolume, 0, this.getFadeTime());
       this.player.once("fade", () => {
         this.player.pause();
-        if (changeStatus) statusStore.playStatus = false;
+        if (changeStatus) store.dispatch(setPlayStatus(false))
         resolve();
       });
     });
@@ -654,8 +659,8 @@ class Player {
    * 播放或暂停
    */
   async playOrPause() {
-    const statusStore = useStatusStore();
-    if (statusStore.playStatus) await this.pause();
+    const { playStatus } = store.getState().status;
+    if (playStatus) await this.pause();
     else await this.play();
   }
   /**
@@ -665,13 +670,10 @@ class Player {
    */
   async nextOrPrev(type: "next" | "prev" = "next", play: boolean = true) {
     try {
-      const statusStore = useStatusStore();
-      const dataStore = useDataStore();
-      const musicStore = useMusicStore();
+      const { personalFmMode, playIndex, playSongMode, playHeartbeatMode } = store.getState().status;
       // 获取数据
-      const { playList } = dataStore;
-      const { playSong } = musicStore;
-      const { playSongMode, playHeartbeatMode } = statusStore;
+      const { playList } = store.getState().data;
+      const { playSong } = store.getState().music;
       // 列表长度
       const playListLength = playList.length;
       // 播放列表是否为空
@@ -679,19 +681,19 @@ class Player {
       // 打卡
       this.scrobbleSong();
       // 若为私人FM
-      if (statusStore.personalFmMode) {
+      if (personalFmMode) {
         await this.initPersonalFM(true);
         return;
       }
       // 只有一首歌的特殊处理
       if (playListLength === 1) {
-        statusStore.lyricIndex = -1;
+        store.dispatch(setLyricIndex(-1))
         this.setSeek(0);
         await this.play();
       }
       // 列表循环或处于心动模式
       if (playSongMode === "repeat" || playHeartbeatMode || playSong.type === "radio") {
-        statusStore.playIndex += type === "next" ? 1 : -1;
+        store.dispatch(setPlayIndex(playIndex + (type === "next" ? 1 : -1)))
       }
       // 随机播放
       else if (playSongMode === "shuffle") {
@@ -699,12 +701,12 @@ class Player {
         // 确保不会随机到同一首
         do {
           newIndex = Math.floor(Math.random() * playListLength);
-        } while (newIndex === statusStore.playIndex);
-        statusStore.playIndex = newIndex;
+        } while (newIndex === playIndex);
+        store.dispatch(setPlayIndex(newIndex))
       }
       // 单曲循环
       else if (playSongMode === "repeat-once") {
-        statusStore.lyricIndex = -1;
+        store.dispatch(setLyricIndex(-1))
         this.setSeek(0);
         await this.play();
         return;
@@ -712,10 +714,10 @@ class Player {
         throw new Error("The play mode is not supported");
       }
       // 索引是否越界
-      if (statusStore.playIndex < 0) {
-        statusStore.playIndex = playListLength - 1;
-      } else if (statusStore.playIndex >= playListLength) {
-        statusStore.playIndex = 0;
+      if (playIndex < 0) {
+        store.dispatch(setPlayIndex(playListLength - 1))
+      } else if (playIndex >= playListLength) {
+        store.dispatch(setPlayIndex(0))
       }
       // 暂停
       await this.pause(false);
@@ -731,26 +733,28 @@ class Player {
    * @param mode 播放模式 repeat / repeat-once / shuffle
    */
   togglePlayMode(mode: PlayModeType | false) {
-    const statusStore = useStatusStore();
+    const { playHeartbeatMode, playSongMode } = store.getState().status;
     // 退出心动模式
-    if (statusStore.playHeartbeatMode) this.toggleHeartMode(false);
+    if (playHeartbeatMode) this.toggleHeartMode(false);
     // 若传入了指定模式
     if (mode) {
-      statusStore.playSongMode = mode;
+      store.dispatch(setPlaySongMode(mode))
     } else {
-      switch (statusStore.playSongMode) {
+      let modeName = "repeat";
+      switch (playSongMode) {
         case "repeat":
-          statusStore.playSongMode = "repeat-once";
+          modeName = "repeat-once";
           break;
         case "shuffle":
-          statusStore.playSongMode = "repeat";
+          modeName = "repeat";
           break;
         case "repeat-once":
-          statusStore.playSongMode = "shuffle";
+          modeName = "shuffle";
           break;
         default:
-          statusStore.playSongMode = "repeat";
+          modeName = "repeat";
       }
+      store.dispatch(setPlaySongMode(modeName as PlayModeType))
     }
     this.playModeSyncIpc();
   }
@@ -758,9 +762,9 @@ class Player {
    * 播放模式同步 ipc
    */
   playModeSyncIpc() {
-    const statusStore = useStatusStore();
+    const { playSongMode } = store.getState().status;
     if (isElectron) {
-      window.electron.ipcRenderer.send("play-mode-change", statusStore.playSongMode);
+      window.electron.ipcRenderer.send("play-mode-change", playSongMode);
     }
   }
   /**
@@ -768,9 +772,8 @@ class Player {
    * @param time 播放进度
    */
   setSeek(time: number) {
-    const statusStore = useStatusStore();
     this.player.seek(time);
-    statusStore.currentTime = time;
+    store.dispatch(setCurrentTime(time));
   }
   /**
    * 获取播放进度
@@ -784,16 +787,15 @@ class Player {
    * @param rate 播放速率
    */
   setRate(rate: number) {
-    const statusStore = useStatusStore();
     this.player.rate(rate);
-    statusStore.playRate = rate;
+    store.dispatch(setPlayRate(rate))
   }
   /**
    * 设置播放音量
    * @param actions 音量
    */
   setVolume(actions: number | "up" | "down" | WheelEvent) {
-    const statusStore = useStatusStore();
+    const { playVolume } = store.getState().status;
     const increment = 0.05;
     // 直接设置
     if (typeof actions === "number") {
@@ -801,37 +803,37 @@ class Player {
     }
     // 分类调节
     else if (actions === "up" || actions === "down") {
-      statusStore.playVolume = Math.max(
+      store.dispatch(setPlayVolume(Math.max(
         0,
-        Math.min(statusStore.playVolume + (actions === "up" ? increment : -increment), 1),
-      );
+        Math.min(playVolume + (actions === "up" ? increment : -increment), 1),
+      )));
     }
     // 鼠标滚轮
     else {
       const deltaY = actions.deltaY;
       const volumeChange = deltaY > 0 ? -increment : increment;
-      statusStore.playVolume = Math.max(0, Math.min(statusStore.playVolume + volumeChange, 1));
+      store.dispatch(setPlayVolume( Math.max(0, Math.min(playVolume + volumeChange, 1))));
     }
     // 调整音量
-    this.player.volume(statusStore.playVolume);
+    this.player.volume(playVolume);
   }
   /**
    * 切换静音
    */
   toggleMute() {
-    const statusStore = useStatusStore();
+    const { playVolume,playVolumeMute } = store.getState().status;
     // 是否静音
-    const isMuted = statusStore.playVolume === 0;
+    const isMuted = playVolume === 0;
     // 恢复音量
     if (isMuted) {
-      statusStore.playVolume = statusStore.playVolumeMute;
+      store.dispatch(setPlayVolume(playVolumeMute));
     }
     // 保存当前音量并静音
     else {
-      statusStore.playVolumeMute = this.player.volume();
-      statusStore.playVolume = 0;
+      store.dispatch(setPlayVolumeMute(this.player.volume()))
+      store.dispatch(setPlayVolume(0));
     }
-    this.player.volume(statusStore.playVolume);
+    this.player.volume(playVolume);
   }
   /**
    * 获取歌曲封面颜色数据
@@ -869,39 +871,37 @@ class Player {
     },
   ) {
     if (!data || !data.length) return;
-    const dataStore = useDataStore();
-    const musicStore = useMusicStore();
-    const statusStore = useStatusStore();
+    const { playSong } = store.getState().music;
     // 获取配置
     const { showTip, scrobble, play } = options;
+    const { playHeartbeatMode, personalFmMode, playSongMode } = store.getState().status;
     // 打卡
     if (scrobble) this.scrobbleSong();
     // 更新列表
-    await dataStore.setPlayList(cloneDeep(data));
+    store.dispatch(setPlayList(cloneDeep(data)))
     // 关闭特殊模式
-    if (statusStore.playHeartbeatMode) this.toggleHeartMode(false);
-    if (statusStore.personalFmMode) statusStore.personalFmMode = false;
+    if (playHeartbeatMode) this.toggleHeartMode(false);
+    if (personalFmMode) store.dispatch(setPersonalFmMode(false));
     // 是否直接播放
     if (song && typeof song === "object" && "id" in song) {
       // 是否为当前播放歌曲
-      if (musicStore.playSong.id === song.id) {
+      if (playSong.id === song.id) {
         if (play) await this.play();
       } else {
         // 查找索引
-        statusStore.playIndex = data.findIndex((item) => item.id === song.id);
+        store.dispatch(setPlayIndex(data.findIndex((item) => item.id === song.id)));
         // 播放
         await this.pause(false);
         await this.initPlayer();
       }
     } else {
-      statusStore.playIndex =
-        statusStore.playSongMode === "shuffle" ? Math.floor(Math.random() * data.length) : 0;
+      store.dispatch(setPlayIndex(playSongMode === "shuffle" ? Math.floor(Math.random() * data.length) : 0));
       // 播放
       await this.pause(false);
       await this.initPlayer();
     }
     // 更改播放歌单
-    musicStore.playPlaylistId = pid ?? 0;
+    store.dispatch(setPlayPlaylistId(pid ?? 0));
     if (showTip) message.success("已开始播放");
   }
   /**
@@ -910,19 +910,20 @@ class Player {
    * @param play 是否立即播放
    */
   async addNextSong(song: SongType, play: boolean = false) {
-    const dataStore = useDataStore();
-    const musicStore = useMusicStore();
-    const statusStore = useStatusStore();
+    const { playSong } = store.getState().music;
+    const { playList } = store.getState().data;
+    const { personalFmMode, playIndex } = store.getState().status;
     // 关闭特殊模式
-    if (statusStore.personalFmMode) statusStore.personalFmMode = false;
+    if (personalFmMode) store.dispatch(setPersonalFmMode(false));
     // 是否为当前播放歌曲
-    if (musicStore.playSong.id === song.id) {
+    if (playSong.id === song.id) {
       this.play();
       message.success("已开始播放");
       return;
     }
     // 尝试添加
-    const songIndex = await dataStore.setNextPlaySong(song, statusStore.playIndex);
+    store.dispatch(setNextPlaySong({song, index: playIndex}))
+    const songIndex = playList.findIndex((item: SongType) => item.id === song.id);
     // 播放歌曲
     if (songIndex < 0) return;
     if (play) this.togglePlayIndex(songIndex, true);
@@ -933,20 +934,19 @@ class Player {
    * @param index 播放索引
    * @param play 是否立即播放
    */
-  async togglePlayIndex(index: number, play: boolean = false) {
-    const dataStore = useDataStore();
-    const statusStore = useStatusStore();
+  async togglePlayIndex(index: number, play: boolean = false) {   
+    const { playIndex } = store.getState().status;
     // 获取数据
-    const { playList } = dataStore;
+    const { playList } = store.getState().data;
     // 若超出播放列表
     if (index >= playList.length) return;
     // 相同
-    if (!play && statusStore.playIndex === index) {
+    if (!play && playIndex === index) {
       this.play();
       return;
     }
     // 更改状态
-    statusStore.playIndex = index;
+    store.dispatch(setPlayIndex(index))
     // 清理并播放
     this.resetStatus();
     await this.initPlayer();
@@ -956,10 +956,9 @@ class Player {
    * @param index 歌曲索引
    */
   removeSongIndex(index: number) {
-    const dataStore = useDataStore();
-    const statusStore = useStatusStore();
+    const { playStatus, playIndex } = store.getState().status;
     // 获取数据
-    const { playList } = dataStore;
+    const { playList } = store.getState().data;
     // 若超出播放列表
     if (index >= playList.length) return;
     // 仅剩一首
@@ -968,45 +967,37 @@ class Player {
       return;
     }
     // 是否为当前播放歌曲
-    const isCurrentPlay = statusStore.playIndex === index;
+    const isCurrentPlay = playIndex === index;
     // 深拷贝，防止影响原数据
     const newPlaylist = cloneDeep(playList);
     // 若将移除最后一首
     if (index === playList.length - 1) {
-      statusStore.playIndex = 0;
+      store.dispatch(setPlayIndex(0))
     }
     // 若为当前播放之后
-    else if (statusStore.playIndex > index) {
-      statusStore.playIndex--;
+    else if (playIndex > index) {
+      store.dispatch(setPlayIndex(playIndex - 1));
     }
     // 移除指定歌曲
     newPlaylist.splice(index, 1);
-    dataStore.setPlayList(newPlaylist);
+    store.dispatch(setPlayList(newPlaylist));
     // 若为当前播放
     if (isCurrentPlay) {
-      this.initPlayer(statusStore.playStatus);
+      this.initPlayer(playStatus);
     }
   }
   /**
    * 清空播放列表
    */
   async cleanPlayList() {
-    const dataStore = useDataStore();
-    const musicStore = useMusicStore();
-    const statusStore = useStatusStore();
     // 停止播放
     Howler.unload();
     // 清空数据
     this.resetStatus();
-    statusStore.$patch({
-      playListShow: false,
-      showFullPlayer: false,
-      playHeartbeatMode: false,
-      personalFmMode: false,
-      playIndex: -1,
-    });
-    musicStore.resetMusicData();
-    dataStore.setPlayList([]);
+    
+    store.dispatch(resetState())
+    store.dispatch(resetMusicData());
+    store.dispatch(setPlayList([]))
     message.success("已清空播放列表");
   }
   /**
@@ -1015,9 +1006,9 @@ class Player {
    */
   toggleOutputDevice(deviceId?: string) {
     try {
-      const settingStore = useSettingStore();
+      const { playDevice } = store.getState().setting;
       // 输出设备
-      const devices = deviceId ?? settingStore.playDevice;
+      const devices = deviceId ?? playDevice;
       if (!(this.player as any)?._sounds.length) return;
       // 获取音频元素
       const audioDom = this.getAudioDom();
@@ -1063,9 +1054,9 @@ class Player {
    * 切换桌面歌词
    */
   toggleDesktopLyric() {
-    const statusStore = useStatusStore();
-    const show = !statusStore.showDesktopLyric;
-    statusStore.showDesktopLyric = show;
+    const { showDesktopLyric } = store.getState().status;
+    const show = !showDesktopLyric;
+    store.dispatch(setShowDesktopLyric(show))
     window.electron.ipcRenderer.send("change-desktop-lyric", show);
     message.success(`${show ? "已开启" : "已关闭"}桌面歌词`);
   }
@@ -1075,11 +1066,10 @@ class Player {
    */
   async toggleHeartMode(open: boolean = true) {
     try {
-      const dataStore = useDataStore();
-      const musicStore = useMusicStore();
-      const statusStore = useStatusStore();
-      if (!open && statusStore.playHeartbeatMode) {
-        statusStore.playHeartbeatMode = false;
+      const { playPlaylistId } = store.getState().music;
+      const { playHeartbeatMode } = store.getState().status;
+      if (!open && playHeartbeatMode) {
+        store.dispatch(setPlayHeartbeatMode(false))
         message.success("已退出心动模式");
         return;
       }
@@ -1091,7 +1081,7 @@ class Player {
         }
         return;
       }
-      if (statusStore.playHeartbeatMode) {
+      if (playHeartbeatMode) {
         message.warning("已处于心动模式");
         this.play();
         return;
@@ -1100,14 +1090,10 @@ class Player {
       message.loading("心动模式开启中", 0);
       // 获取所需数据
       const playSongData = this.getPlaySongData();
-      const likeSongsList: any = await dataStore.getUserLikePlaylist();
       // if (!playSongData || !likeSongsList) {
       //   throw new Error("获取播放数据或喜欢列表失败");
       // }
-      const pid =
-        musicStore.playPlaylistId && musicStore.playPlaylistId !== 0
-          ? musicStore.playPlaylistId
-          : likeSongsList?.detail?.id;
+      const pid = playPlaylistId;
       // 开启心动模式
       const result = await heartRateList(playSongData?.id || 0, pid);
       if (result.code === 200) {
@@ -1116,7 +1102,7 @@ class Player {
         // 更新播放列表
         await this.updatePlayList(heartRatelists, heartRatelists[0]);
         // 更改模式
-        statusStore.playHeartbeatMode = true;
+        store.dispatch(setPlayHeartbeatMode(true))
       } else {
         message?.destroy();
         message.error(result.message || "心动模式开启出错，请重试");
@@ -1133,18 +1119,18 @@ class Player {
    * 听歌打卡
    */
   async scrobbleSong() {
-    const musicStore = useMusicStore();
-    const statusStore = useStatusStore();
-    const settingStore = useSettingStore();
+    const { playPlaylistId } = store.getState().music;
+    const { duration } = store.getState().status;
+    const { scrobbleSong } = store.getState().setting;
     try {
       if (!isLogin()) return;
-      if (!settingStore.scrobbleSong) return;
+      if (!scrobbleSong) return;
       // 获取所需数据
       const playSongData = this.getPlaySongData();
       if (!playSongData) return;
       const { id, name } = playSongData;
-      const sourceid = musicStore.playPlaylistId;
-      const time = statusStore.duration;
+      const sourceid = playPlaylistId;
+      const time = duration;
       // 网易云打卡
       console.log("打卡：", id, name, sourceid, time);
       await scrobble(id, sourceid, time);
@@ -1157,25 +1143,27 @@ class Player {
    * @param playNext 是否播放下一首
    */
   async initPersonalFM(playNext: boolean = false) {
-    const musicStore = useMusicStore();
-    const statusStore = useStatusStore();
+    let { personalFM } = store.getState().music;
     try {
       // 获取并重置
       const getPersonalFmData = async () => {
         const result = await personalFm();
         const songData = formatSongsList(result.data);
         console.log(`🌐 personal FM:`, songData);
-        musicStore.personalFM.list = songData;
-        musicStore.personalFM.playIndex = 0;
+        store.dispatch(setPersonalFM({list: songData, playIndex: 0}))
+
+        personalFM = store.getState().music.personalFM;
       };
+
+      
       // 若为空
-      if (musicStore.personalFM.list.length === 0) await getPersonalFmData();
+      if (personalFM.list.length === 0) await getPersonalFmData();
       // 若需播放下一首
       if (playNext) {
-        statusStore.personalFmMode = true;
+        store.dispatch(setPersonalFmMode(true));
         // 更改索引
-        if (musicStore.personalFM.playIndex < musicStore.personalFM.list.length - 1) {
-          musicStore.personalFM.playIndex++;
+        if (personalFM.playIndex < personalFM.list.length - 1) {
+          store.dispatch(setPersonalFMIndex(personalFM.playIndex + 1))
         } else {
           await getPersonalFmData();
         }
@@ -1193,14 +1181,13 @@ class Player {
    */
   async personalFMTrash(id: number) {
     try {
-      const statusStore = useStatusStore();
       if (!isLogin()) {
         eventBus.emit("need-login");
         return;
       }
       // 更改模式
-      statusStore.personalFmMode = true;
-      statusStore.playHeartbeatMode = false;
+      store.dispatch(setPersonalFmMode(true))
+      store.dispatch(setPlayHeartbeatMode(false))
       // 加入回收站
       const result = await personalFmToTrash(id);
       if (result.code === 200) {

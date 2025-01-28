@@ -1,27 +1,27 @@
 import { LyricLine, parseLrc, parseYrc } from "@applemusic-like-lyrics/lyric";
 import type { LyricType } from "@/types/main";
 import { msToS } from "./time";
+import store from "@/stores";
+import { setSongLyric } from "@/stores/slices/musicSlice";
 
 // 歌词排除内容
 const getExcludeKeywords = () => {
-  const settingStore = useSettingStore();
-  return settingStore.excludeKeywords;
+  const { excludeKeywords } = store.getState().setting;
+  return excludeKeywords;
 };
 
 // 恢复默认
 export const resetSongLyric = () => {
-  const musicStore = useMusicStore();
-  musicStore.songLyric = {
+  store.dispatch(setSongLyric({
     lrcData: [],
     lrcAMData: [],
     yrcData: [],
     yrcAMData: [],
-  };
+  }));
 };
 
 // 解析歌词数据
 export const parsedLyricsData = (lyricData: any) => {
-  const musicStore = useMusicStore();
   if (lyricData.code !== 200) {
     resetSongLyric();
     return;
@@ -63,12 +63,13 @@ export const parsedLyricsData = (lyricData: any) => {
       yrcData = alignLyrics(yrcData, parseLrcData(yromalrcParseData), "roma");
     }
   }
-  musicStore.songLyric = {
+  console.log("[PARSE LYRIC]");
+  store.dispatch(setSongLyric({
     lrcData,
     yrcData,
     lrcAMData: parseAMData(lrcParseData, tlyricParseData, romalrcParseData),
     yrcAMData: parseAMData(yrcParseData, ytlrcParseData, yromalrcParseData),
-  };
+  }));
 };
 
 // 解析普通歌词
@@ -156,7 +157,6 @@ export const parseLocalLyric = (lyric: string) => {
     resetSongLyric();
     return;
   }
-  const musicStore = useMusicStore();
   // 解析
   const lrc: LyricLine[] = parseLrc(lyric);
   const lrcData: LyricType[] = parseLrcData(lrc);
@@ -174,8 +174,7 @@ export const parseLocalLyric = (lyric: string) => {
       lrcDataParsed.push(lrcItem);
     }
   }
-  // 更新歌词
-  musicStore.songLyric = {
+  store.dispatch(setSongLyric({
     lrcData: lrcDataParsed,
     lrcAMData: lrcDataParsed.map((line, index, lines) => ({
       words: [{ startTime: line.time, endTime: 0, word: line.content }],
@@ -188,7 +187,7 @@ export const parseLocalLyric = (lyric: string) => {
     })),
     yrcData: [],
     yrcAMData: [],
-  };
+  }))  
 };
 
 // 处理 AM 歌词

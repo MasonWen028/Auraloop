@@ -6,6 +6,7 @@
   font-family: Arial, sans-serif;
   flex: 1;
   overflow: hidden; /* Ensure content stays within the parent */
+  user-select: none;
 }
 
 .album-cover {

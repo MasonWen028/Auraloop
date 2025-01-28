@@ -124,6 +124,9 @@ const statusSlice = createSlice({
     setPlayVolume(state, action: PayloadAction<number>) {
       state.playVolume = action.payload;
     },
+    setChorus(state, action: PayloadAction<number>) {
+      state.chorus = action.payload;
+    },
     // Reset state to initial
     resetState() {
       return initialState;
@@ -133,12 +136,53 @@ const statusSlice = createSlice({
     },
     setSongCardVisible(state, action: PayloadAction<boolean>) {
       state.showSongCard = action.payload;
-    }
+    },
+    setPlayLoading(state, action: PayloadAction<boolean>) {
+      state.playLoading = action.payload;
+    },
+    setPlayUblock(state, action: PayloadAction<boolean>) {
+      state.playUblock = action.payload;
+    },
+    setPersonalFmMode(state, action: PayloadAction<boolean>) {
+      state.personalFmMode = action.payload;
+    },
+    setPlayHeartbeatMode(state, action: PayloadAction<boolean>) {
+      state.playHeartbeatMode = action.payload
+    },
+    setShowDesktopLyric(state, action: PayloadAction<boolean>) {
+      state.showDesktopLyric = action.payload;
+    },
+    setPlayIndex(state, action: PayloadAction<number>) {
+      state.playIndex = action.payload;
+    },
+    setPlayVolumeMute(state, action: PayloadAction<number>) {
+      state.playVolumeMute = action.payload;
+    },
+    setPlayRate(state, action: PayloadAction<number>) {
+      state.playRate = action.payload;
+    },
+    setPlaySongMode(state, action: PayloadAction<PlayModeType>) {
+      state.playSongMode = action.payload;
+    },
+    setLyricIndex(state, action: PayloadAction<number>) {
+      state.lyricIndex = action.payload;
+    },
   },
 });
 
 // Export actions
 export const {
+  setLyricIndex,
+  setPlaySongMode,
+  setPlayRate,
+  setPlayVolumeMute,
+  setPlayIndex,
+  setShowDesktopLyric,
+  setPlayHeartbeatMode,
+  setPersonalFmMode,
+  setPlayUblock,
+  setPlayLoading,
+  setChorus,
   toggleMenuCollapsed,
   setSearchFocus,
   setSearchInputValue,

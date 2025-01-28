@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import './index.css';
 import Previous from "@/components/SvgIcon/Previous";
 import Pause from "@/components/SvgIcon/Pause";
 import Play from "@/components/SvgIcon/Play";
 import Next from "@/components/SvgIcon/Next";
+import player from "@/utils/player";
 
 const PlayActions: React.FC =() => {
   const styles = {
@@ -17,11 +18,22 @@ const PlayActions: React.FC =() => {
     }
   }
 
+  useEffect(()=> {
+    player.initPlayer();
+  }, []);
+
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handlePlayState = () => {
+    player.playOrPause();
     setIsPlaying(!isPlaying);
   }
+
+  const handlePlayerNext = () => {
+    player.nextOrPrev("next");
+  }
+
+
 
   return (
     <div style={styles.playActionContainer}>
@@ -33,7 +45,7 @@ const PlayActions: React.FC =() => {
         !isPlaying && 
         <Play className="play-pause-icon" onClick={handlePlayState}/>
       }
-      <Next className="forward-back-icon"/>
+      <Next className="forward-back-icon" onClick={handlePlayerNext}/>
     </div>
   )
 }

@@ -5,8 +5,8 @@ import { HeartFilled, LikeFilled, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 interface SongActionsProps {
-  artistId: number,
-  albumId: number
+  artistId?: number,
+  albumId?: number
 }
 
 const items: MenuProps['items'] = [
@@ -40,9 +40,9 @@ const items: MenuProps['items'] = [
 const SongActions: React.FC<SongActionsProps> = ({artistId, albumId}) => {
   const navigate = useNavigate();
   const onClick = ({ key }: any) => {
-    if (key === '3') {
+    if (key === '3' && artistId) {
       navigate(`/artist/${artistId}`);
-    } else if (key === '4') {
+    } else if (key === '4' && albumId) {
       navigate(`/album/${albumId}`);
     }
   };

@@ -37,10 +37,11 @@ export const songUrl = (
 ) => {
   return request({
     url: "/song/url",
-    params: {
+    data: {
       id,
       br: 999000
     },
+    method: 'POST'
   });
 };
 
@@ -57,9 +58,9 @@ export const unlockSongUrl = (id: number, keyword: string, server: "netease" | "
 // 获取歌曲歌词
 export const songLyric = (id: number) => {
   return request({
-    url: "/lyric/new",
+    url: "/lyric/advanceds",
     params: {
-      id,
+      songId: id,
     },
   });
 };

@@ -1,10 +1,12 @@
-import { dailyRecommend, personalFm } from "@/api/rec";
-import { setPlaylistType } from "@/stores/slices/dataSlicce";
+
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import './index.css';
 import LikeIt from "@/components/LikeIt";
 import { Link } from "react-router-dom";
+import { MetaData } from "@/types/main";
+import player from "@/utils/player";
+import Lyric from "@/components/Lyric";
 
 interface SongProps {
   type: 0 | 1;
@@ -12,82 +14,66 @@ interface SongProps {
 
 
 const Song: React.FC<SongProps> = ({type}) => {
-  const {playlistType} = useSelector((state: any) => state.data);
   const dispatch = useDispatch();
+
+  
+  
+
+  const { playSong } = useSelector((state: any) => state.music);
+
+  const { personalFmMode } = useSelector((state: any) => state.status);
+
+  console.log(playSong);
 
   const [isScrollable, setIsScrollable] = useState(false);
   
-  console.log(playlistType);
 
-  const getSongs = async () => {
-    
+  const getSongs = () => {
     if (type === 0) {
-      var res = await personalFm();
-      console.log(res);
+      player.initPersonalFM();
+      player.initPlayer();
     }
   }
 
-  const songNameRef = useRef<HTMLDivElement>(null);
+  const songNameRef = useRef<HTMLDivElement>(null);   
 
-  
+  const artists: MetaData[] = []
 
-  const cover = "http://p2.music.126.net/ELGjJ9NSncvWjLlXl3OEZg==/109951168500844175.jpg?param=140y140";
-  
-  const title = "Soviet March", artist = "James Hannigan", likes = undefined;
-  const lyrics = undefined;
-  const artists = [{
-    name: "James Hannigan",
-    id: 1,
-  },{
-    name: 'Jam',
-    id: 2
-  }]
-
-
-  useEffect(()=> {
-    if (songNameRef.current) {
-      const isOverflowing =
-        songNameRef.current.scrollWidth > songNameRef.current.offsetWidth;
-      setIsScrollable(isOverflowing);
-    }
-  },[title]);
-
+  // useEffect(()=> {
+  //   if (songNameRef.current) {
+  //     const isOverflowing =
+  //       songNameRef.current.scrollWidth > songNameRef.current.offsetWidth;
+  //     setIsScrollable(isOverflowing);
+  //   }
+  // },[title]);
 
   useEffect(() => {
-    if (type && type !== playlistType) {
-      dispatch(setPlaylistType(type));
-    }
-    getSongs();    
-  }, [type, playlistType, dispatch]);
+    getSongs();
+  },[]);
 
   
   return (
     <div className="full-player">
       <div  className="overlay blur">
-        <img  src={cover} className="overlay-img" alt="cover"/>
+        <img  src={playSong.cover}  style={{objectFit: 'cover'}} className="overlay-img" alt="cover"/>
       </div>
       <div className="player-content">
       {/* Left Part: Cover and Info */}
       <div className="content-left">
         <div className="player-cover cover">
           <div className="s-image cover-img">
-            <img src="https://p2.music.126.net/9989DWE1MdbpzxSbGX0RaQ==/650910883689775.jpg?param=1024y1024" alt="image" className="cover loaded"/>
+            <img src={playSong.cover} alt="image" style={{objectFit: 'cover'}} className="cover loaded"/>
           </div>
-          <video 
-            src="http://dcover.music.126.net/fdcc/eab3/8ceb/8bd304fb35ce438631730725a0272782.mp4?wsSecret=ae6f5c850800d0216548b436b5cabf7f&amp;wsTime=1737957443" 
-            className="dynamic-cover loaded" 
-            autoPlay={true}>
-          </video>
         </div>
         <div className="player-data cover">
         <div
           className="name"
           ref={songNameRef}
         >
-          <span className={`name-text text-hidden ${isScrollable ? '' : 'no-scroll'}`}>{title}</span>
+          <span className={`name-text text-hidden ${isScrollable ? '' : 'no-scroll'}`}>{playSong.name}</span>
           <div>
             {
-              artists.map((artist, index) => (
+              Array.isArray(playSong.artists) ? playSong.artists.map((artist: MetaData, index: number) => (
                 <React.Fragment key={artist.id}>
                   <Link
                     className="artist-name"
@@ -98,9 +84,9 @@ const Song: React.FC<SongProps> = ({type}) => {
                   </Link>
                   {index < artists.length - 1 && ', '}
                 </React.Fragment>
-              ))}
+              )):<span>{playSong.artists}</span>
+            }
           </div>
-          
         </div>
           <div className="like">
             <LikeIt tipStyle={{fontSize: 10}} isLiked={false}>
@@ -111,7 +97,7 @@ const Song: React.FC<SongProps> = ({type}) => {
       </div>
       {/* Right Part: Lyrics */}
       <div className="content-right">
-        <p>{lyrics || "No lyrics available."}</p>
+        <Lyric></Lyric>
       </div>
       </div>
     </div>

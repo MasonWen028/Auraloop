@@ -1,7 +1,6 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import localforage from "localforage";
-import { AlbumType, ArtistType, CoverType, ListState, PlaylistType, SongItem, UserDataType } from '@/types/main'
-import cloneDeep from "lodash-es/cloneDeep";
+import { AlbumType, ArtistType, CoverType, ListState, PlaylistType, SongType, UserDataType } from '@/types/main'
 
 // Initialize localForage instances
 const musicDB = localforage.createInstance({
@@ -18,12 +17,12 @@ const userDB = localforage.createInstance({
 
 // Define the initial state
 let initialState: ListState = {
-  playList: [] as SongItem[],
+  playList: [] as SongType[],
   playlistType: 0,
-  historyList: [] as SongItem[],
+  historyList: [] as SongType[],
   searchHistory: [],
   localPlayList: [],
-  cloudPlayList: [] as SongItem[],
+  cloudPlayList: [] as SongType[],
   userLoginStatus: false,
   loginType: "qr",
   userData: {
@@ -48,7 +47,7 @@ let initialState: ListState = {
       name: "My favorite",
       cover: "/images/album.jpg?assest",
     },
-    data: [] as SongItem[],
+    data: [] as SongType[],
   },
   catData: {
     type: {},
@@ -100,7 +99,7 @@ const dataSlice = createSlice({
       state.userData = {...state.userData, cookies: action.payload};
     },
     // Set the playlist
-    setPlayList(state, action: PayloadAction<SongItem[]>) {
+    setPlayList(state, action: PayloadAction<SongType[]>) {
       state.playList = action.payload;
       userDB.setItem("playList", action.payload);
     },
@@ -110,7 +109,7 @@ const dataSlice = createSlice({
     },
 
     // Add a song to the playlist
-    addSongToPlayList(state, action: PayloadAction<SongItem>) {
+    addSongToPlayList(state, action: PayloadAction<SongType>) {
       const song = action.payload;
       const updatedPlayList = [...state.playList.filter((s) => s.id !== song.id), song];
       state.playList = updatedPlayList;
@@ -118,7 +117,7 @@ const dataSlice = createSlice({
     },
 
     // Set history list
-    setHistory(state, action: PayloadAction<SongItem>) {
+    setHistory(state, action: PayloadAction<SongType>) {
       const song = action.payload;
       const updatedHistoryList = [song, ...state.historyList.filter((s) => s.id !== song.id)];
       state.historyList = updatedHistoryList.slice(0, 500); // Keep max 500 entries
@@ -171,7 +170,18 @@ const dataSlice = createSlice({
       state.userLikeData = action.payload;
       userDB.setItem("userLikeData", action.payload); // Persist in localForage
     },
+    setNextPlaySong(state, action: PayloadAction<{song: SongType, index: number}>) {
+      const { song, index} = action.payload;
+      if (state.playList.length === 0) {
+        state.playList = [song];
+        return;
+      }
 
+      const indexAdd = index + 1;
+      state.playList.splice(indexAdd, 0, song);
+
+      state.playList = state.playList.filter((item, idx) => idx === indexAdd || item.id !== song.id);
+    },
     // Clear user data
     clearUserData(state) {
       state.userLoginStatus = false;
@@ -201,6 +211,7 @@ const dataSlice = createSlice({
 });
 
 export const {
+  setNextPlaySong,
   setPlaylistType,
   setPlayList,
   setLikePlaylist,

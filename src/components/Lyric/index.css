@@ -1,0 +1,332 @@
+.lyric {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+  overflow: hidden;
+  filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2));
+  mask: linear-gradient(
+    180deg,
+    hsla(0, 0%, 100%, 0) 0,
+    hsla(0, 0%, 100%, 0.6) 5%,
+    #fff 10%,
+    #fff 75%,
+    hsla(0, 0%, 100%, 0.6) 85%,
+    hsla(0, 0%, 100%, 0)
+  );
+}
+
+.lyric .placeholder {
+  width: 100%;
+}
+
+.lyric .placeholder:first-child {
+  height: 300px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.lyric .placeholder:last-child {
+  height: 0;
+  padding-top: 100%;
+}
+
+.lyric .lyric-content {
+  width: 100%;
+  height: 100%;
+}
+
+.lyric .lrc-line {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 6px 0;
+  padding: 10px 16px;
+  transform: scale(0.86);
+  transform-origin: left center;
+  transition: filter 0.35s, opacity 0.35s, transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+  cursor: pointer;
+}
+
+.lyric .lrc-line .content {
+  display: block;
+  font-size: var(--lrc-size);
+  font-weight: var(--lrc-bold);
+  word-wrap: break-word;
+}
+
+.lyric .lrc-line .content .content-text {
+  position: relative;
+  display: inline-block;
+}
+
+.lyric .lrc-line .content .content-text .word {
+  opacity: 0.3;
+  display: inline-block;
+}
+
+.lyric .lrc-line .content .content-text .filler {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: none;
+  will-change: -webkit-mask-position-x, transform, opacity;
+  mask-image: linear-gradient(
+    to right,
+    rgb(0, 0, 0) 45.4545454545%,
+    rgba(0, 0, 0, 0) 54.5454545455%
+  );
+  mask-size: 220% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgb(0, 0, 0) 45.4545454545%,
+    rgba(0, 0, 0, 0) 54.5454545455%
+  );
+  -webkit-mask-size: 220% 100%;
+  -webkit-mask-repeat: no-repeat;
+  transition: opacity 0.3s, filter 0.5s, margin 0.3s, padding 0.3s !important;
+}
+
+.lyric .lrc-line .content .content-text.end-with-space {
+  margin-right: 12px;
+}
+
+.lyric .lrc-line .content .content-text.end-with-space:last-child {
+  margin-right: 0;
+}
+
+.lyric .lrc-line .content .content-text.content-long .filler {
+  margin: -40px;
+  padding: 40px;
+  filter: drop-shadow(0px 0px 14px rgba(255, 255, 255, 0.6));
+}
+
+.lyric .lrc-line .tran {
+  margin-top: 8px;
+  opacity: 0.6;
+  font-size: var(--lrc-tran-size);
+  transition: opacity 0.35s;
+}
+
+.lyric .lrc-line .roma {
+  margin-top: 4px;
+  opacity: 0.5;
+  font-size: var(--lrc-roma-size);
+  transition: opacity 0.35s;
+}
+
+.lyric .lrc-line .count-down-content {
+  height: 50px;
+  margin-top: 40px;
+}
+
+.lyric .lrc-line .count-down {
+  transform-origin: left;
+  justify-content: flex-end;
+}
+
+.lyric .lrc-line.is-lrc {
+  opacity: 0.3;
+}
+
+.lyric .lrc-line.is-yrc .content {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.lyric .lrc-line.is-yrc .tran,
+.lyric .lrc-line.is-yrc .roma {
+  opacity: 0.3;
+}
+
+.lyric .lrc-line.on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lyric .lrc-line.on .content-text .filler {
+  opacity: 1;
+  -webkit-mask-position-x: 0%;
+  transition-property: -webkit-mask-position-x, transform, opacity;
+  transition-timing-function: linear, ease, ease;
+}
+
+.lyric .lrc-line.on .tran,
+.lyric .lrc-line.on .roma {
+  opacity: 0.6;
+}
+
+.lyric .lrc-line::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0px;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background-color: rgba(var(--main-color), 0.14);
+  opacity: 0;
+  z-index: 0;
+  transform: scale(1.05);
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.lyric .lrc-line:hover {
+  opacity: 1;
+}
+
+.lyric .lrc-line:hover::before {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.lyric .lrc-line:active::before {
+  transform: scale(0.95);
+}
+
+.lyric .menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 80px;
+  padding: 20% 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.lyric .menu .divider {
+  height: 2px;
+  width: 40px;
+  background-color: rgba(var(--main-color), 0.12);
+}
+
+.lyric .menu .time {
+  width: 40px;
+  margin: 8px 0;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  background-color: rgba(var(--main-color), 0.14);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  border: 1px solid rgba(var(--main-color), 0.12);
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.lyric .menu .time::after {
+  content: "s";
+  margin-left: 2px;
+}
+
+.lyric .menu .time:hover {
+  background-color: rgba(var(--main-color), 0.28);
+}
+
+.lyric .menu .menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+
+.lyric .menu .menu-icon .n-icon {
+  font-size: 30px;
+  color: rgb(var(--main-color));
+}
+
+.lyric .menu .menu-icon:hover {
+  transform: scale(1.1);
+  background-color: rgba(var(--main-color), 0.14);
+}
+
+.lyric .menu .menu-icon:active {
+  transform: scale(1);
+}
+
+.lyric.flex-end span {
+  text-align: right;
+}
+
+.lyric.flex-end .placeholder {
+  justify-content: flex-end;
+}
+
+.lyric.flex-end .lrc-line {
+  transform-origin: right;
+  align-items: flex-end;
+}
+
+.lyric.flex-end .lrc-line .content {
+  text-align: right;
+}
+
+.lyric.flex-end .lrc-line .count-down {
+  transform-origin: right;
+  justify-content: flex-end;
+}
+
+.lyric.center span,
+.lyric.pure span {
+  text-align: center !important;
+}
+
+.lyric.center .placeholder,
+.lyric.pure .placeholder {
+  justify-content: center !important;
+}
+
+.lyric.center .lrc-line,
+.lyric.pure .lrc-line {
+  transform-origin: center !important;
+  align-items: center !important;
+}
+
+.lyric.center .lrc-line .content,
+.lyric.pure .lrc-line .content {
+  text-align: center !important;
+}
+
+.lyric.center .lrc-line .count-down,
+.lyric.pure .lrc-line .count-down {
+  transform-origin: center;
+  justify-content: center;
+}
+
+.lyric.pure .lyric-content .placeholder:first-child {
+  height: 100px;
+}
+
+.lyric.pure .lyric-content .lrc-line {
+  margin-bottom: -12px;
+  transform: scale(0.76);
+}
+
+.lyric.pure .lyric-content .lrc-line.on {
+  transform: scale(0.9);
+}
+
+.lyric:hover .lrc-line {
+  filter: blur(0) !important;
+}
+
+.lyric:hover .menu {
+  opacity: 0.6;
+}
