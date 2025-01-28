@@ -159,7 +159,7 @@ const Lyric = () => {
             >
               <div className="content">
                 {
-                  <span className="word">{JSON.stringify(item.contents)}</span>
+                  <span className="word">{item.content}</span>
                 // item.contents.map((text: any, textIndex: number) => (
                 //   <span
                 //     key={textIndex}
@@ -173,7 +173,6 @@ const Lyric = () => {
                 //     </span>
                 //   </span>
                 // ))
-                
                 }
               </div>
               {item.tran && showTran && <span className="tran">{item.tran}</span>}
