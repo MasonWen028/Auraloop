@@ -22,7 +22,7 @@ const HoverImage: React.FC<HoverImageProps> = ({ imageSrc, route, className }) =
   };
 
   const handleClick = () => {
-    navigate(route);
+    navigate(route, { replace: true });
   };
 
   return (
@@ -31,7 +31,7 @@ const HoverImage: React.FC<HoverImageProps> = ({ imageSrc, route, className }) =
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <img src={imageSrc} alt="Hoverable"/>
+      <img style={{width: '100%', height: '100%'}} src={imageSrc} alt="Hoverable"/>
       {isHovered && (
         <div className="hover-icon" onClick={handleClick}>
           <ArrowsAltOutlined style={{fontSize: 30}}/>

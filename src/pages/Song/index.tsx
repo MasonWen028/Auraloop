@@ -7,6 +7,9 @@ import { Link } from "react-router-dom";
 import { MetaData } from "@/types/main";
 import player from "@/utils/player";
 import Lyric from "@/components/Lyric";
+import { isString } from "lodash";
+import { setPersonalFmMode } from "@/stores/slices/statusSlice";
+import { setPlayMode } from "@/stores/slices/stateSlice";
 
 interface SongProps {
   type: 0 | 1;
@@ -14,38 +17,36 @@ interface SongProps {
 
 
 const Song: React.FC<SongProps> = ({type}) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch();  
 
-  
-  
+  const { playSong } = useSelector((state: any) => state.state);
 
-  const { playSong } = useSelector((state: any) => state.music);
-
-  const { personalFmMode } = useSelector((state: any) => state.status);
-
-  console.log(playSong);
+  const GetCover = () => {
+    let tempCover = playSong?.cover;
+    if (!tempCover) {
+      if (!isString(playSong?.album)) {
+        tempCover = playSong?.album?.blurPicUrl;
+      }
+    }
+    return tempCover;
+  }
 
   const [isScrollable, setIsScrollable] = useState(false);
   
 
   const getSongs = () => {
     if (type === 0) {
-      player.initPersonalFM();
-      player.initPlayer();
+      dispatch(setPlayMode(0));
+      
+
+      //player.initPersonalFM();
+      //player.initPlayer();
     }
   }
 
   const songNameRef = useRef<HTMLDivElement>(null);   
 
   const artists: MetaData[] = []
-
-  // useEffect(()=> {
-  //   if (songNameRef.current) {
-  //     const isOverflowing =
-  //       songNameRef.current.scrollWidth > songNameRef.current.offsetWidth;
-  //     setIsScrollable(isOverflowing);
-  //   }
-  // },[title]);
 
   useEffect(() => {
     getSongs();
@@ -54,15 +55,16 @@ const Song: React.FC<SongProps> = ({type}) => {
   
   return (
     <div className="full-player">
-      <div  className="overlay blur">
-        <img  src={playSong.cover}  style={{objectFit: 'cover'}} className="overlay-img" alt="cover"/>
-      </div>
+      {/* <div  className="overlay blur">
+        <img  src={GetCover()}  style={{objectFit: 'cover'}} className="overlay-img" alt="cover"/>
+      </div> */}
       <div className="player-content">
       {/* Left Part: Cover and Info */}
       <div className="content-left">
+        <div className="song-artist">
         <div className="player-cover cover">
           <div className="s-image cover-img">
-            <img src={playSong.cover} alt="image" style={{objectFit: 'cover'}} className="cover loaded"/>
+            <img src={GetCover()} alt="image" style={{objectFit: 'cover'}} className="cover loaded"/>
           </div>
         </div>
         <div className="player-data cover">
@@ -93,6 +95,7 @@ const Song: React.FC<SongProps> = ({type}) => {
               1W+
             </LikeIt>
           </div>
+        </div>
         </div>
       </div>
       {/* Right Part: Lyrics */}

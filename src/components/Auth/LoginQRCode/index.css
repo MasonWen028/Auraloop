@@ -65,7 +65,7 @@
   color: #7a7a7a;
 }
 
-.content {
+.login-qrcode .content {
   display: flex;
   justify-content: space-around;
   align-items: flex-start;

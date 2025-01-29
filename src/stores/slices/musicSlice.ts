@@ -1,5 +1,6 @@
 import { LyricType, SongType } from "@/types/main";
 import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
+import { isString } from "lodash";
 
 // Define TypeScript interfaces
 interface LyricLine {
@@ -42,7 +43,7 @@ const defaultMusicData: SongType = {
 
 // Initial state
 const initialState: MusicState = {
-  playSong: { ...defaultMusicData },
+  playSong: JSON.parse(localStorage.getItem("playSong") + '') || { ...defaultMusicData },
   playPlaylistId: 0,
   songLyric: {
     lrcData: [],
@@ -78,8 +79,24 @@ const musicSlice = createSlice({
     },
     // Set the current song
     setPlaySong(state, action: PayloadAction<SongType>) {
-      state.playSong = action.payload;
-      console.log("[SET CURRENT SONG]", JSON.stringify(state.playSong));
+      let tempCover = action.payload?.cover;
+      if (!tempCover) {
+        if (!isString(action.payload?.album)) {
+          tempCover = action.payload?.album?.picUrl + '';
+        }
+      }
+      if (!tempCover) {
+        if (Array.isArray(action.payload?.artists)) {
+          tempCover = action.payload?.artists[0].picUrl + '';
+        }
+      }
+      if (!tempCover) {
+        tempCover = "/assets/images/song.jpg"
+      }
+
+      state.playSong = {...action.payload, cover: tempCover};
+
+      localStorage.setItem("playSong", JSON.stringify(state.playSong));
     },
     // Set the playlist ID
     setPlayPlaylistId(state, action: PayloadAction<number>) {

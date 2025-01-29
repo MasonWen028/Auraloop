@@ -19,6 +19,7 @@ const TitleBar : React.FC = () => {
       alignItems: 'center',
       userSelect: 'none',
       WebkitAppRegion: 'drag',
+      backgroundColor: 'transparent'
     },
     noDrag: {
       WebkitAppRegion: 'no-drag', // Excludes this area from dragging

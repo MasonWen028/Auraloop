@@ -20,6 +20,8 @@ useEffect(() => {
   player.initPlayer();
 }, []);
 
+console.log("[FIRST LAYER]");
+
   return (
     <StrictMode>
       <div>
@@ -39,7 +41,7 @@ useEffect(() => {
                 <Route path="/user" element={<UserProfile />} />
               </Routes>
             </Content>
-        <TitleBar/>
+            <TitleBar/>
       </div>
     </StrictMode>
   )

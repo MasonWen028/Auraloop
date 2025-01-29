@@ -4,6 +4,7 @@ import { SongType } from '@/types/main';
 import LikeIt from '@/components/LikeIt';
 import HoverImage from '@/components/HoverImage';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 interface MusicItemProps {
   song: SongType;
@@ -12,18 +13,21 @@ interface MusicItemProps {
 }
 
 const MusicItem: React.FC<MusicItemProps> = ({ song, isFavorite, onFavoriteToggle }) => {
-  const { id, name, artists, album, cover } = song;
+  
+  const { playSong } = useSelector((state: any) => state.state);
+  const { id, name, artists, album, cover } = playSong;
+
+
   const [isScrollable, setIsScrollable] = useState(false);
   const songNameRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check if the song name overflows the container
     if (songNameRef.current) {
       const isOverflowing =
         songNameRef.current.scrollWidth > songNameRef.current.offsetWidth;
       setIsScrollable(isOverflowing);
     }
-  }, [name]); // Recheck when `name` changes
+  }, [name]);
 
   const formatDuration = (duration: number) => {
     const minutes = Math.floor(duration / 60);
@@ -37,14 +41,12 @@ const MusicItem: React.FC<MusicItemProps> = ({ song, isFavorite, onFavoriteToggl
 
   return (
     <div className="music-item">
-      <HoverImage imageSrc={cover} route='' className='album-cover'/>
-      {/* <img src={cover} alt={album} className="album-cover" /> */}
+      <HoverImage imageSrc={cover} route={`/`} className='album-cover'/>
       <div className="song-info">
         <div
           className={`song-name ${isScrollable ? '' : 'no-scroll'}`}
           ref={songNameRef}
         >
-          {/* Render a single span or scrolling spans based on the overflow state */}
           {isScrollable ? (
             <>
               <span>{name}</span>

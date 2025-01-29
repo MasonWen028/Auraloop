@@ -14,35 +14,61 @@ interface CustomCSSProperties extends React.CSSProperties {
   "--lrc-bold"?: string;
 }
 const Lyric = () => {
+  // const {
+  //   playSong,
+  //   songLyric,
+  //   currentTimeOffset,
+  //   pureLyricMode,
+  //   lyricIndex,
+  //   playLoading,
+  //   playerMetaShow,
+  //   lyricsScrollPosition,
+  //   showYrcAnimation,
+  //   lrcMousePause,
+  //   lyricFontSize,
+  //   lyricTranFontSize,
+  //   lyricRomaFontSize,
+  //   lyricFontBold,
+  //   LyricFont,
+  //   playerType,
+  //   lyricsPosition,
+  //   showYrc,
+  //   lyricsBlur,
+  //   showTran,
+  //   showRoma,
+  // } = useSelector((state: any) => ({
+  //   ...state.music,
+  //   ...state.status,
+  //   ...state.setting,
+  // }));
   const {
     songLyric,
     playSong,
+    lyricIndex,
     currentTimeOffset,
     pureLyricMode,
-    lyricIndex,
     playLoading,
     playerMetaShow,
     lyricsScrollPosition,
-    showYrcAnimation,
-    lrcMousePause,
     lyricFontSize,
     lyricTranFontSize,
-    lyricRomaFontSize,
     lyricFontBold,
+    lyricsBlur,
+    showYrcAnimation,
+    lrcMousePause,
+    lyricRomaFontSize,
     LyricFont,
     playerType,
     lyricsPosition,
     showYrc,
-    lyricsBlur,
     showTran,
     showRoma,
   } = useSelector(selectLyricSettings);
+ 
 
   const isHasYrc = songLyric.yrcData.length > 0;
 
   const isHasLrc = songLyric.lrcData.length > 0 && playSong.type !== "radio";
-
-  console.log("[LYRIC]", songLyric, isHasYrc, isHasLrc);
 
   const [lrcMouseStatus, setLrcMouseStatus] = useState(false);
   const [playSeek, setPlaySeek] = useState(0);
@@ -143,40 +169,63 @@ const Lyric = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Scrollbars ref={lyricScrollRef} style={{ height: "100%" }}>
+      <Scrollbars
+        className="none-bar-scroller"
+        autoHide
+        renderThumbVertical={({ style, ...props }) => (
+          <div {...props} style={{ ...style, display: "none" }} />
+        )}
+        renderThumbHorizontal={({ style, ...props }) => (
+          <div {...props} style={{ ...style, display: "none" }} />
+        )}
+        renderView={({ style, ...props }) => (
+          <div
+            {...props}
+            style={{
+              ...style,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center", 
+            }}
+          />
+        )}
+        ref={lyricScrollRef}>
         {showYrc && isHasYrc ? (
           songLyric.yrcData.map((item: any, index: number) => (
-            <div
+            
+            <div 
               key={index}
-              id={`lrc-${index}`}
-              className={`lrc-line is-yrc ${lyricIndex === index ? "on" : ""}`}
-              style={{
-                filter: lyricsBlur
-                  ? `blur(${Math.min(Math.abs(lyricIndex - index) * 1.8, 10)}px)`
-                  : "blur(0)",
-              }}
-              onClick={() => jumpSeek(item.time)}
-            >
-              <div className="content">
-                {
-                  <span className="word">{item.content}</span>
-                // item.contents.map((text: any, textIndex: number) => (
-                //   <span
-                //     key={textIndex}
-                //     className={`content-text ${
-                //       text.duration >= 1.5 && playSeek <= text.endTime ? "content-long" : ""
-                //     }`}
-                //   >
-                //     <span className="word">{text.content}</span>
-                //     <span className="filler" style={getYrcStyle(text, index)}>
-                //       {text.content}
-                //     </span>
-                //   </span>
-                // ))
-                }
-              </div>
-              {item.tran && showTran && <span className="tran">{item.tran}</span>}
-              {item.roma && showRoma && <span className="roma">{item.roma}</span>}
+              id={`lrc-${index}`} 
+              className="lyric-container">
+                <div
+                className={`lrc-line is-yrc ${lyricIndex === index ? "on" : ""}`}
+                style={{
+                  filter: lyricsBlur
+                    ? `blur(${Math.min(Math.abs(lyricIndex - index) * 1.8, 10)}px)`
+                    : "blur(0)",
+                }}
+                onClick={() => jumpSeek(item.time)}
+                >
+                  <div className="content">
+                    {item.contents.map((text: any, textIndex: number) => (
+                      <span
+                        key={textIndex}
+                        className={`content-text ${
+                          text.duration >= 1.5 && playSeek <= text.endTime ? "content-long" : ""} 
+                          ${text.endsWithSpace && 'end-with-space'}
+                          `}
+                      >
+                        <span className="word">{text.content}</span>
+                        <span className="filler" style={getYrcStyle(text, index)}>
+                          {text.content}
+                        </span>
+
+                      </span>
+                    ))}
+                  </div>
+                  {item.tran && showTran && <span className="tran">{item.tran}</span>}
+                  {item.roma && showRoma && <span className="roma">{item.roma}</span>}
+                </div>
             </div>
           ))
         ) : isHasLrc ? (

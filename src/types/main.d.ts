@@ -5,6 +5,8 @@ export type MetaData = {
   name: string;
   cover?: string;
   alias?: string[];
+  picUrl?: string;
+  picUrl?: string;
 };
 
 export type SongType = {

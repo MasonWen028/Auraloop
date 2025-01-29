@@ -70,11 +70,10 @@ class Player {
     const { playList } = store.getState().data;
     const { personalFM } = store.getState().music;
     const { personalFmMode, playIndex} = store.getState().status;
-    
-    console.log("[MODE]", personalFM);
-    console.log("[SONG]", personalFM.list?.[personalFM.playIndex]);
+    console.log("[PLAYMODE]", personalFmMode, playIndex);
     // 若为私人FM
     if (personalFmMode) {
+      console.log("[PLAYINDEX]", personalFM.playIndex);
       return personalFM.list?.[personalFM.playIndex] || defaultMusicData;
     }
 
@@ -95,7 +94,7 @@ class Player {
    * 处理播放状态
    */
   private handlePlayStatus() {
-    const { songLyric } = store.getState().music;
+    
     const { currentTimeOffset  }= store.getState().status;
     const { showYrc, showTaskbarProgress } = store.getState().setting;
     // 清理定时器
@@ -103,6 +102,8 @@ class Player {
     // 更新播放状态
     this.playerInterval = setInterval(() => {
       if (!this.player.playing()) return;
+
+      const { songLyric } = store.getState().music;
       
       const currentTime = this.getSeek();
       const duration = this.player.duration();
@@ -112,8 +113,7 @@ class Player {
       const hasYrc = !songLyric.yrcData.length || !showYrc;
       const lyrics = hasYrc ? songLyric.lrcData : songLyric.yrcData;
       // 歌词实时偏移量
-      
-      const index = lyrics?.findIndex((v: any) => v?.time >= currentTime + currentTimeOffset);
+      const index = lyrics?.findIndex((v: any) => v?.time >= currentTime + currentTimeOffset && v?.endTime > currentTime + currentTimeOffset);
       // 歌词跨界处理
       const lyricIndex = index === -1 ? lyrics.length - 1 : index - 1;
       // 更新状态
@@ -401,7 +401,6 @@ class Player {
       //       },
       //     ],
     };
-    console.log("METADATA", metaData);
     // 更新数据
     navigator.mediaSession.metadata = new window.MediaMetadata(metaData);
   }
@@ -615,9 +614,7 @@ class Player {
    * 播放
    */
   async play() {
-    console.log('[START PLAY]')
     const { playVolume } = store.getState().status;
-    console.log(playVolume)
     // 已在播放
     if (this.player.playing()) {
       store.dispatch(setPlayStatus(true))
@@ -1154,16 +1151,24 @@ class Player {
 
         personalFM = store.getState().music.personalFM;
       };
-
+      store.dispatch(setPersonalFmMode(true));
       
       // 若为空
-      if (personalFM.list.length === 0) await getPersonalFmData();
+      if (personalFM.list.length === 0 || personalFM.list.length >= personalFM.playIndex + 1) await getPersonalFmData();
       // 若需播放下一首
       if (playNext) {
-        store.dispatch(setPersonalFmMode(true));
         // 更改索引
         if (personalFM.playIndex < personalFM.list.length - 1) {
           store.dispatch(setPersonalFMIndex(personalFM.playIndex + 1))
+        } else {
+          await getPersonalFmData();
+        }
+        // 清理并播放
+        this.resetStatus();
+        await this.initPlayer();
+      } else {
+        if (personalFM.playIndex < personalFM.list.length - 1) {
+          store.dispatch(setPersonalFMIndex(personalFM.playIndex))
         } else {
           await getPersonalFmData();
         }

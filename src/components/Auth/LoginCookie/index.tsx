@@ -100,7 +100,11 @@ const LoginCookie: React.FC<LoginCookieProps> = ({ onClose, onSaveLogin }) => {
         placeholder="请输入 Cookie"
       />
       <div className="menu">
-        {isElectron && (
+
+      <Button type="primary" onClick={handleLogin}>
+            登录
+          </Button>
+        {/* {isElectron && (
           <Button type="primary" onClick={openWeb}>
             自动获取
           </Button>
@@ -109,7 +113,7 @@ const LoginCookie: React.FC<LoginCookieProps> = ({ onClose, onSaveLogin }) => {
           <Button type="primary" onClick={handleLogin}>
             登录
           </Button>
-        )}
+        )} */}
       </div>
     </div>
   );

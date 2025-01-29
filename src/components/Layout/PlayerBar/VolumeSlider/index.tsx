@@ -1,20 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Slider } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Mute from "@/components/SvgIcon/Mute";
 import Volume from "@/components/SvgIcon/Volume";
-
+import newPlayer from "@/utils/newPlayer";
+import { setPlayVolume, setPlayerMuted } from "@/stores/slices/stateSlice";
 const VolumeSlider: React.FC = () => {
-  const [volume, setVolume] = useState(50); // Default volume level
-  const [isSliderVisible, setIsSliderVisible] = useState(false); // Toggle slider visibility
-  const [muted, setMuted] = useState(false);
-
+  const dispatch = useDispatch();
+  const playVolume = useSelector((state: any) => state.state.playVolume);
   const { playBar } = useSelector((state: any) => state.color.value);
+
+  const [isSliderVisible, setIsSliderVisible] = useState(false); // Toggle slider visibility
+  const [muted, setMuted] = useState(playVolume === 0);
+  const [lastVolume, setLastVolume] = useState(playVolume); // Store last volume before mute
+
   let hideTimer: NodeJS.Timeout | null = null;
+
+  // Sync volume with Redux state changes
+  useEffect(() => {
+    newPlayer.setVolume(playVolume); // Update Howler player volume
+    setMuted(playVolume === 0); // Auto-mute when volume is 0
+  }, [playVolume]);
 
   // Handle volume change
   const handleVolumeChange = (value: number) => {
-    setVolume(value);
+    dispatch(setPlayVolume(value)); // Update Redux state
     if (muted && value > 0) {
       setMuted(false); // Unmute if volume is adjusted above 0
     }
@@ -22,30 +32,25 @@ const VolumeSlider: React.FC = () => {
 
   // Toggle mute
   const toggleMute = () => {
-    const newMutedState = !muted;
-    setMuted(newMutedState);
-
-    if (newMutedState) {
-      setVolume(0); // Mute the volume
-    } else if (volume === 0) {
-      setVolume(50); // Restore default volume if muted and unmuted
+    if (muted) {
+      dispatch(setPlayVolume(lastVolume > 0 ? lastVolume : 0.5));
+    } else {
+      setLastVolume(playVolume); // Store current volume before muting
+      dispatch(setPlayVolume(0)); // Mute
     }
-
-    setIsSliderVisible(false); // Immediately hide the slider
+    setMuted(!muted);
   };
 
   // Show slider on hover
   const handleMouseEnter = () => {
-    if (hideTimer) {
-      clearTimeout(hideTimer); // Clear any existing hide timer
-    }
-    setIsSliderVisible(true); // Show slider
+    if (hideTimer) clearTimeout(hideTimer); // Clear existing hide timer
+    setIsSliderVisible(true);
   };
 
-  // Start timer to hide slider on mouse leave
+  // Hide slider after a delay when the mouse leaves
   const handleMouseLeave = () => {
     hideTimer = setTimeout(() => {
-      setIsSliderVisible(false); // Hide slider after 1 second
+      setIsSliderVisible(false);
     }, 300);
   };
 
@@ -79,15 +84,12 @@ const VolumeSlider: React.FC = () => {
     <div style={styles.container}>
       {/* Mute and Volume Icons */}
       {muted ? (
-        <Mute
-          className="action-btn"
-          onClick={toggleMute} // Toggle mute
-        />
+        <Mute className="action-btn" onClick={toggleMute} />
       ) : (
         <Volume
           className="action-btn"
-          onClick={toggleMute} // Toggle mute
-          onMouseEnter={handleMouseEnter} // Show slider on hover
+          onClick={toggleMute}
+          onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         />
       )}
@@ -95,18 +97,19 @@ const VolumeSlider: React.FC = () => {
       {/* Slider */}
       <div
         style={styles.sliderContainer}
-        onMouseEnter={handleMouseEnter} // Prevent hiding when hovering over slider
-        onMouseLeave={handleMouseLeave} // Start timer to hide slider
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <Slider
           className="transparent-track-slide"
-          tooltip={{open: false}}
+          tooltip={{ open: false }}
           vertical
-          value={volume}
-          onChange={handleVolumeChange} // Adjust volume
+          value={playVolume}
+          onChange={handleVolumeChange}
           style={styles.slider}
           min={0}
-          max={100}
+          step={0.01}
+          max={1}
         />
       </div>
     </div>

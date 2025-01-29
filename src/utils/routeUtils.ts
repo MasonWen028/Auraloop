@@ -70,7 +70,7 @@ export const handleRouteColorChange = (pathname: string, dispatch: Dispatch, cur
   const rgbColor = hexToRgb(current);
   const backgroundGradient = `linear-gradient(to top, rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 1), rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.8))`;
 
-  if (pathname === "/recommended") {   
+  if (pathname === "/") {   
     dispatch(setColor({ sideBar: current, content: backgroundGradient}));
     dispatch(setSongCardVisible(false));
   } else {    

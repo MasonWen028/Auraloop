@@ -63,7 +63,6 @@ export const parsedLyricsData = (lyricData: any) => {
       yrcData = alignLyrics(yrcData, parseLrcData(yromalrcParseData), "roma");
     }
   }
-  console.log("[PARSE LYRIC]");
   store.dispatch(setSongLyric({
     lrcData,
     yrcData,

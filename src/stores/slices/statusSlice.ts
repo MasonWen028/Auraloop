@@ -132,7 +132,10 @@ const statusSlice = createSlice({
       return initialState;
     },
     setCurrentState(state, action: PayloadAction<{ currentTime: number, duration: number, progress: number, lyricIndex:number }>) {
-      state = {...state, ...action.payload}
+      state.currentTime = action.payload.currentTime;
+      state.duration = action.payload.duration;
+      state.progress = action.payload.progress;
+      state.lyricIndex = action.payload.lyricIndex;
     },
     setSongCardVisible(state, action: PayloadAction<boolean>) {
       state.showSongCard = action.payload;
@@ -145,6 +148,7 @@ const statusSlice = createSlice({
     },
     setPersonalFmMode(state, action: PayloadAction<boolean>) {
       state.personalFmMode = action.payload;
+      console.log("[SET FMMODE]", action.payload);
     },
     setPlayHeartbeatMode(state, action: PayloadAction<boolean>) {
       state.playHeartbeatMode = action.payload

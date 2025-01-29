@@ -5,6 +5,7 @@ import dataSlice from './slices/dataSlicce';
 import countryCodeSlice from "./slices/countryCodeSlice";
 import musicSlice from "./slices/musicSlice";
 import settingSlice from "./slices/settingSlice";
+import stateSlice from "./slices/stateSlice";
 
 const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ const store = configureStore({
     data: dataSlice,
     countries: countryCodeSlice,
     music: musicSlice,
-    setting: settingSlice
+    setting: settingSlice,
+    state: stateSlice
   }
 })
 
