@@ -6,9 +6,13 @@ import Music from "@/components/SvgIcon/Music";
 import Earphone from "@/components/SvgIcon/Earphone";
 import CreatePlaylistModal from "@/components/CreatePlaylist";
 import { handleRouteColorChange } from '@/utils/routeUtils';
+import Playing from "@/components/SvgIcon/Playing";
 
 const LeftMenu: React.FC = () => {
   const { playBar, sideBar } = useSelector((state: any) => state.color.value);
+
+  const { playState, playMode } = useSelector((state: any) => state.state);
+
   const location = useLocation();
 
   const dispatch = useDispatch();
@@ -111,7 +115,7 @@ const LeftMenu: React.FC = () => {
   };
 
   const menuItems = [
-    { path: "/", icon: <PlayCircleOutlined />, label: "Recommended" },
+    { path: "/", icon: playState === 1 && playMode === 0 ? <Playing></Playing> : <PlayCircleOutlined />, label: "Recommended" },
     { path: "/discover", icon: <Earphone />, label: "Discover" },
     { section: "My Music" },
     { path: "/album/favorites", icon: <HeartOutlined />, label: "Liked Songs" },
