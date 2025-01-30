@@ -31,6 +31,10 @@ interface State {
   lyricIndex: number;
   currentSeek: number;
   propgress: number;
+  duration: number;
+  chorusDot: number[];
+  playHistory: SongType[];
+  historyIndex: number
 }
 
 const stateDB = localforage.createInstance({
@@ -72,7 +76,11 @@ let initialState:State = {
   currentTimeOffset: 0,
   lyricIndex: 0,
   currentSeek: 0,
-  propgress: 0
+  propgress: 0,
+  duration: 0,
+  chorusDot: [],
+  playHistory: [],
+  historyIndex: 0
 }
 
 async function loadDefaultState() {
@@ -101,12 +109,22 @@ const stateSlice = createSlice({
   name: 'state',
   initialState,
   reducers: {
+    setPlayHistory(state, action: PayloadAction<SongType[]>) {
+      state.playHistory = action.payload;
+      stateDB.setItem("playHistory", action.payload);
+    },
+    setHistoryIndex(state, action: PayloadAction<number>) {
+      state.historyIndex = action.payload;
+      stateDB.setItem("historyIndex", action.payload);
+    },
     setPlayState(state, action:PayloadAction<PlayStateType>) {
       state.playState = action.payload;
     },
     setPlaySong(state, action: PayloadAction<SongType>) {
       state.playSong = {...action.payload, cover: GetCover(action.payload)};
-      stateDB.setItem("playSong", action.payload);
+      state.duration = action.payload.duration / 1000;
+      state.currentSeek = 0;
+      state.lyricIndex = 0;
     },
     setNextSong(state, action: PayloadAction<SongType>) {
       state.nextSong = action.payload;
@@ -174,15 +192,21 @@ const stateSlice = createSlice({
     setCurrentSeek(state, action: PayloadAction<number>) {
       state.currentSeek = action.payload;
     },
-    setCurrentState(state, action: PayloadAction<{currentSeek: number, progress: number, lyricIndex: number}>) {
+    setCurrentState(state, action: PayloadAction<{currentSeek: number, progress: number, lyricIndex: number, duration: number}>) {
       state.currentSeek = action.payload.currentSeek;
       state.lyricIndex = action.payload.lyricIndex;
       state.propgress = action.payload.progress;
+      state.duration = action.payload.duration;
+    },
+    setChorusDots(state, action: PayloadAction<number[]>) {
+      state.chorusDot = action.payload;
     },
     resetLyricState(state) {
       state.currentSeek = 0;
       state.lyricIndex = 0;
       state.propgress = 0;
+      state.duration = 0;
+      state.chorusDot = [];
       state.songLyric = {
         lrcData: [],
         yrcData: [],
@@ -212,6 +236,9 @@ const GetCover = (song: SongType) => {
 }
 
 export const {
+  setChorusDots,
+  setPlayHistory,
+  setHistoryIndex,
   resetLyricState,
   setCurrentState,
   setCurrentSeek,

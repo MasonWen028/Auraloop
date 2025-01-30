@@ -26,18 +26,10 @@ const PlayActions: React.FC =() => {
 
   const { playState, playMode } = useSelector((state: any) => state.state);
 
-  console.log(playState)
-
   const handlePlayState = (state: 0 | 1 | 2 | 3) => {
     dispatch(setPlayState(state))
     if (state === 1) {
-      if (playMode === 0) {
-        if (newPlayer.isPuasing()) {
-          newPlayer.play(); // Resume playback instead of restarting
-        } else {
-          newPlayer.playFm(); // Start FM if nothing is playing
-        }
-      }
+      newPlayer.play();
     } else {
       newPlayer.pause();
     }
@@ -48,10 +40,15 @@ const PlayActions: React.FC =() => {
     newPlayer.playNext();
   }
 
+  const handlePlayerPrev = () => {
+    //player.nextOrPrev("next", true);
+    newPlayer.playPrev();
+  }
+
 
   return (
     <div style={styles.playActionContainer}>
-      <Previous className="forward-back-icon"/>
+      <Previous className="forward-back-icon" onClick={handlePlayerPrev}/>
       { playState === 1 && 
         <Pause className="play-pause-icon" onClick={() => handlePlayState(2)}/>
       }

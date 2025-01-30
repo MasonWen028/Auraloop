@@ -39,6 +39,7 @@ const SongTable: React.FC<SongTableProps> = ({ songs, style, inAlbum }) => {
     return likedSongs.includes(id);
   };
 
+
   // const isLiked = useMemo(() => isFavoritedSong(song.id), [song.id]);
 
   const handleSongLiked = (liked: boolean) => {

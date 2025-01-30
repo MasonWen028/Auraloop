@@ -10,6 +10,7 @@ import Lyric from "@/components/Lyric";
 import { isString } from "lodash";
 import { setPersonalFmMode } from "@/stores/slices/statusSlice";
 import { setPlayMode } from "@/stores/slices/stateSlice";
+import newPlayer from "@/utils/newPlayer";
 
 interface SongProps {
   type: 0 | 1;
@@ -37,14 +38,20 @@ const Song: React.FC<SongProps> = ({type}) => {
   const getSongs = () => {
     if (type === 0) {
       dispatch(setPlayMode(0));
-      
-
-      //player.initPersonalFM();
-      //player.initPlayer();
+      newPlayer.playFm(false);
     }
   }
 
-  const songNameRef = useRef<HTMLDivElement>(null);   
+  const songNameRef = useRef<HTMLDivElement>(null);  
+  
+  
+  useEffect(() => {
+    if (songNameRef.current) {
+      const isOverflowing =
+        songNameRef.current.scrollWidth > songNameRef.current.offsetWidth;
+      setIsScrollable(isOverflowing);
+    }
+  }, [playSong]);
 
   const artists: MetaData[] = []
 

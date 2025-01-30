@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Scrollbars } from "react-custom-scrollbars-2";
-import SvgIcon from "@/components/SvgIcon";
 import { useSelector } from "react-redux";
-import player from "@/utils/player";
 import './index.css';
 import { selectLyricSettings } from "@/stores/selector";
 import newPlayer from "@/utils/newPlayer";
@@ -16,7 +14,6 @@ interface CustomCSSProperties extends React.CSSProperties {
 }
 const Lyric = () => {
   const {
-    currentTimeOffset,
     pureLyricMode,
     playLoading,
     playerMetaShow,
@@ -40,25 +37,13 @@ const Lyric = () => {
  
   const isHasYrc = songLyric.yrcData.length > 0;
 
+  console.log('[LYRIC INDEX]', lyricIndex);
+
   const isHasLrc = songLyric.lrcData.length > 0 && playSong.type !== "radio";
 
   const [lrcMouseStatus, setLrcMouseStatus] = useState(false);
-  // const [playSeek, setPlaySeek] = useState(0);
+
   const lyricScrollRef = useRef<Scrollbars | null>(null);
-
-  const currentTimeOffsetValue = currentTimeOffset > 0
-    ? `+${currentTimeOffset}`
-    : currentTimeOffset;
-
-  const updatePlaySeek = () => {
-    //setPlaySeek(newPlayer.getSeek() as number);
-  };
-
-  
-  useEffect(() => {
-    const interval = setInterval(updatePlaySeek, 1000); // Update seek every second
-    return () => clearInterval(interval);
-  }, []);
 
   const lyricsScroll = (index: number) => {
     const lrcItem = document.getElementById(index >= 0 ? `lrc-${index}` : "lrc-placeholder");

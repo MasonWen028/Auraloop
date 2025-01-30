@@ -11,11 +11,15 @@ app.on('ready', () => {
     minHeight: 600,
     frame: false,
     autoHideMenuBar: true,
+    resizable: true,
     webPreferences: {
+      experimentalFeatures: true,
       preload: path.join(__dirname, 'preload.cjs'), // Use a preload script for secure IPC
       contextIsolation: true,
       nodeIntegration: true,
+      backgroundThrottling: false
     },
+    visualEffectState: 'active',
   });
 
   mainWindow.on('maximize', () => {
@@ -29,6 +33,7 @@ app.on('ready', () => {
   mainWindow.loadURL('http://localhost:5173'); // Vite's default dev server URL
 
   mainWindow.webContents.openDevTools({ mode: 'detach' });
+
 });
 
 app.on('window-all-closed', () => {
@@ -36,6 +41,12 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
+
+app.disableHardwareAcceleration(false);
+
+app.commandLine.appendSwitch('enable-transparent-visuals');
+app.commandLine.appendSwitch('disable-gpu', false);
+
 
 ipcMain.on('window-control', (event, action) => {
   switch (action) {
@@ -52,5 +63,12 @@ ipcMain.on('window-control', (event, action) => {
     case 'close':
       mainWindow.close();
       break;
+  }
+});
+
+ipcMain.on('update-background-color', (event, newColor) => {
+  if (BrowserWindow.getAllWindows().length > 0) {
+    const mainWindow = BrowserWindow.getAllWindows()[0]; // Assuming a single window app
+    mainWindow.setBackgroundColor(newColor); // Dynamically set the background color
   }
 });

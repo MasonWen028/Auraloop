@@ -1,6 +1,7 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { setColor } from "@/stores/slices/colorSlice";
 import { setSongCardVisible } from "@/stores/slices/statusSlice";
+import { isElectron } from "./platformDetector";
 
 export const generateRandomColors = () => {
   const colors = [
@@ -71,9 +72,15 @@ export const handleRouteColorChange = (pathname: string, dispatch: Dispatch, cur
   const backgroundGradient = `linear-gradient(to top, rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 1), rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.8))`;
 
   if (pathname === "/") {   
+    if(isElectron) {
+      window.electron.ipcRenderer.send('update-background-color', current);
+    }
     dispatch(setColor({ sideBar: current, content: backgroundGradient}));
     dispatch(setSongCardVisible(false));
   } else {    
+    if(isElectron) {
+      window.electron.ipcRenderer.send('update-background-color', nonRecommendMenuColor);
+    }
     dispatch(setColor({ sideBar: nonRecommendMenuColor, content: nonRecommendPageColor}));
     dispatch(setSongCardVisible(true));
   }

@@ -136,7 +136,7 @@ const initialState: SettingState = {
   playSongDemo: false,
   scrobbleSong: false,
   dynamicCover: true,
-  lyricFontSize: 30,
+  lyricFontSize: 24,
   lyricTranFontSize: 22,
   lyricRomaFontSize: 18,
   lyricFontBold: true,

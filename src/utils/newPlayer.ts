@@ -5,13 +5,16 @@ import {
   setPlayFmList,
   setLyricIndex,
   setSongLyric,
+  setHistoryIndex,
+  setPlayIndex,
+  setChorusDots,
 } from "@/stores/slices/stateSlice";
 import { SongType } from "@/types/main";
 import { Howl, Howler } from "howler";
 import { personalFm } from "@/api/rec";
 import store from "@/stores";
 import { message } from "antd"; // Import for error messages
-import { songLyric, songUrl, unlockSongUrl } from "@/api/song"; // APIs to fetch song URLs
+import { songChorus, songLyric, songUrl, unlockSongUrl } from "@/api/song"; // APIs to fetch song URLs
 import { isElectron } from "@/utils/platformDetector"; // Check for Electron environment
 import { parsedLyricsData, resetSongLyric } from "./lyric";
 import { setCurrentState } from "@/stores/slices/stateSlice";
@@ -83,6 +86,8 @@ class NewPlayer {
 
     await this.getLyricData(song.id);
 
+    await this.getChorus(song.id);
+
     // Create the Howl player and start playback
     await this.createPlayer(url, autoPlay);
   }
@@ -92,20 +97,18 @@ class NewPlayer {
    */
   async nextFmSong() {
     const state = store.getState().state;
-    const { playFmList, playFmIndex } = state;
+  let { playFmList, playFmIndex } = state;
 
-    console.log(playFmList);
+  console.log(playFmList);
 
-    if (playFmIndex < playFmList.length - 1) {
-      store.dispatch(setPlayFmIndex(playFmIndex + 1));
-    } else {
-      // Fetch more FM songs when the list is exhausted
-      await this.loadPersonalFm();
-      store.dispatch(setPlayFmIndex(0));
-    }
+  if (playFmIndex < playFmList.length - 1) {
+    store.dispatch(setPlayFmIndex(playFmIndex + 1));
+  } else {
+    await this.loadPersonalFm(); // Load new FM songs if at the end
+    store.dispatch(setPlayFmIndex(0));
+  }
 
-    // Play the next song
-    await this.playFm();
+  await this.playFm();
   }
 
   /**
@@ -145,6 +148,47 @@ class NewPlayer {
     }
   }
 
+  async playPrev() {
+    const state = store.getState().state;
+    let { playHistory, historyIndex, playMode, playFmList, playFmIndex, playList, playIndex } = state;
+  
+    if (playMode === 1) {
+      // **Case 1: Playlist Mode - Play Previous Song in Playlist**
+      if (playIndex > 0) {
+        store.dispatch(setPlayIndex(playIndex - 1));
+        return this.playFromPlaylist(playList[playIndex - 1]);
+      } else {
+        console.log("Already at the first song in the playlist");
+        return;
+      }
+    }
+  
+    if (playMode === 0) {
+      // **Case 2: Personal FM Mode - Play from History**
+      if (historyIndex > 0) {
+        // Move back in history
+        const prevSong = playHistory[historyIndex - 1];
+        store.dispatch(setHistoryIndex(historyIndex - 1));
+        store.dispatch(setPlaySong(prevSong));
+  
+        const url = await this.getPlayableUrl(prevSong);
+        if (!url) {
+          this.playPrev(); 
+          return;
+        }  
+        await this.createPlayer(url, true);
+      } else {
+        // **Case 3: History Ended - Restart Personal FM**
+        console.log("History ended, restarting Personal FM");
+        store.dispatch(setHistoryIndex(-1));
+        await this.playFm();
+      }
+    }
+  
+    console.log("No previous song available");
+  }
+  
+
   /**
    * Create a Howl player for the given song URL.
    * @param url The song URL to play
@@ -154,7 +198,7 @@ class NewPlayer {
     if (this.player) {
       this.player.unload(); // Unload the previous instance
     }
-
+    console.log(autoPlay);
     this.player = new Howl({
       src: [url], // Use the fetched URL instead of `song.cover`
       autoplay: autoPlay,
@@ -217,9 +261,17 @@ class NewPlayer {
     const currentTime = this.player.seek();
     const duration = this.player.duration();
     const progress = calculateProgress(currentTime, duration);
-    const index = lyrics?.findIndex((v) => v?.time >= currentTime + currentTimeOffset && currentTime + currentTimeOffset < v?.endTime);
+    const index = lyrics?.findIndex((v) => v?.time >= currentTime + currentTimeOffset);
     const lyricIndex = index === -1 ? lyrics.length - 1 : index - 1;
-    store.dispatch(setCurrentState({currentSeek: currentTime, progress: progress,lyricIndex}));
+    console.log('[BEFORE SET LYRIC INDEX]', lyricIndex);
+    store.dispatch(setCurrentState({currentSeek: currentTime, progress: progress,lyricIndex, duration: duration}));
+  }
+
+  private async getChorus(id: number) {
+    var res = await songChorus(id);
+    var chorus:number[] = [];
+    res.data.map((c: any) => chorus.push(c.startTime/1000));
+    store.dispatch(setChorusDots(chorus));
   }
 
 
@@ -232,7 +284,18 @@ class NewPlayer {
     parsedLyricsData(lyricRes);
   }
 
-
+  async playFromPlaylist(song: SongType) {
+    if (!song) return;
+  
+    store.dispatch(setPlaySong(song));
+  
+    const url = await this.getPlayableUrl(song);
+    if (!url) {
+      this.playNext();
+      return;
+    }
+    await this.createPlayer(url, true);
+  }
 
   /**
    * Stop real-time lyrics update.
@@ -296,10 +359,25 @@ class NewPlayer {
     return this.player.seek();
   }
 
+
   playNext() {
-    const { playMode } = store.getState().state;
+    const state = store.getState().state;
+    let { playMode, playList, playIndex } = state;
+
+    if (playMode === 1) {
+      // **Case 1: Playlist Mode - Play Next Song in Playlist**
+      if (playIndex < playList.length - 1) {
+        store.dispatch(setPlayIndex(playIndex + 1));
+        return this.playFromPlaylist(playList[playIndex + 1]);
+      } else {
+        console.log("Reached end of playlist");
+        return;
+      }
+    }
+
     if (playMode === 0) {
-      this.nextFmSong();
+      // **Case 2: Personal FM Mode - Play Next FM Song**
+      return this.nextFmSong();
     }
   }
 

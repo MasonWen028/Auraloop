@@ -1,0 +1,39 @@
+
+
+.player-slider {
+  margin: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+
+/* .player-slider:hover .ant-slider-step,
+.player-slider:hover .chorus-dot,
+.player-slider:hover .ant-slider-track,
+.player-slider:hover .ant-slider-rail {
+  height: 6px;
+} */
+
+
+.player-slider .ant-slider-step{
+  background-color: rgb(255,255,255, 0.2);
+}
+
+.player-slider .ant-slider-handle {
+  visibility: collapse;
+}
+
+
+.player-slider .ant-slider-track {
+  background-color: rgb(255,255,255, 0.5);
+}
+
+.chorus-dot {
+  position: 'absolute';
+  top: '50%';
+  transform: 'translate(-50%, -50%)';
+  width: 4px;
+  height: 4px;
+  background-color: 'white';
+  border-radius: '50%';
+  cursor: 'pointer';
+}

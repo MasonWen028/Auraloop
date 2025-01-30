@@ -7,6 +7,7 @@ import MusicItem from "./MusicItem";
 import { SongType } from "@/types/main";
 import { personalFm } from "@/api/rec";
 import { setPlayFmIndex, setPlayFmList, setPlaySong } from "@/stores/slices/stateSlice";
+import PlayerSlider from "./PlayerSlider";
 
 const PlayerBar: React.FC = () => {
   const { playBar } = useSelector((state: any) => state.color.value)
@@ -114,13 +115,17 @@ const PlayerBar: React.FC = () => {
  console.log("[REREND]");
 
   return (
+    <>
+    
     <Row style={styles.container}>
+    <PlayerSlider></PlayerSlider>
       <MusicItem song={mockSong} isFavorite={favoriteSongIds.includes(mockSong.id)}
         onFavoriteToggle={handleFavoriteToggle}/>
       
       <PlayActions/>
-      <SongActions id={'testId'}/>
+      <SongActions/>
     </Row>
+    </>
   );
 };
 
