@@ -5,3 +5,12 @@
 .ant-drawer-content.music-drawer {
   background-color: rgb(41,41,41);
 }
+
+.music-drawer .ant-drawer-close {
+  padding: 0;
+  font-size: 20px;
+}
+
+.music-drawer .ant-drawer-body {
+  padding-top: 0;
+}

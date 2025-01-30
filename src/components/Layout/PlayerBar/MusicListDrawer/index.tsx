@@ -2,6 +2,7 @@ import { Button, Drawer, Space } from "antd"
 import { useState } from "react";
 import './index.css'
 import Right from "@/components/SvgIcon/Right";
+import MusicDrawerItem from "../MusicDrawerItem";
 
 
 const MusicListDrawer = () => {
@@ -18,17 +19,15 @@ const MusicListDrawer = () => {
 
   return (
     <Drawer
-      title="Drawer with extra actions"
+      title=""
       placement={'right'}
       className="music-drawer"
       width={420}
       onClose={onClose}
-      closeIcon={<Right style={{color: 'white', fontSize: 18}}></Right>}
+      closeIcon={<Right style={{color: 'white'}}></Right>}
       open={musciListVisible}
     >
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
+      <MusicDrawerItem></MusicDrawerItem>
     </Drawer>
   )
 }
