@@ -98,7 +98,7 @@ const SongTable: React.FC<SongTableProps> = ({ songs, style, inAlbum }) => {
               song.artists.map((artist, index) => {
                 return (
                   <React.Fragment>
-                    <Link style={{color: 'inherit'}} to={`/artist/${artist.id}`}>
+                    <Link key={artist.id} style={{color: 'inherit'}} to={`/artist/${artist.id}`}>
                       { artist.name }
                     </Link>
                   {index < song.artists.length - 1 && ', '}
@@ -119,7 +119,7 @@ const SongTable: React.FC<SongTableProps> = ({ songs, style, inAlbum }) => {
               { song["duration"] }
           </div>
           <div className="song-option">
-            <SongActions artistId={Array.isArray(song.artists) ? song.artists[0].id : 0} albumId={!isString(song.album) ? song.album.id : 0}/>
+            <SongActions artistId={Array.isArray(song.artists) ? song.artists[0].id : 0} albumId={!isString(song.album) ? song.album?.id : 0}/>
           </div>
         </div>
       ))}

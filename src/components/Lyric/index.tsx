@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import player from "@/utils/player";
 import './index.css';
 import { selectLyricSettings } from "@/stores/selector";
+import newPlayer from "@/utils/newPlayer";
 
 
 interface CustomCSSProperties extends React.CSSProperties {
@@ -14,37 +15,7 @@ interface CustomCSSProperties extends React.CSSProperties {
   "--lrc-bold"?: string;
 }
 const Lyric = () => {
-  // const {
-  //   playSong,
-  //   songLyric,
-  //   currentTimeOffset,
-  //   pureLyricMode,
-  //   lyricIndex,
-  //   playLoading,
-  //   playerMetaShow,
-  //   lyricsScrollPosition,
-  //   showYrcAnimation,
-  //   lrcMousePause,
-  //   lyricFontSize,
-  //   lyricTranFontSize,
-  //   lyricRomaFontSize,
-  //   lyricFontBold,
-  //   LyricFont,
-  //   playerType,
-  //   lyricsPosition,
-  //   showYrc,
-  //   lyricsBlur,
-  //   showTran,
-  //   showRoma,
-  // } = useSelector((state: any) => ({
-  //   ...state.music,
-  //   ...state.status,
-  //   ...state.setting,
-  // }));
   const {
-    songLyric,
-    playSong,
-    lyricIndex,
     currentTimeOffset,
     pureLyricMode,
     playLoading,
@@ -64,14 +35,15 @@ const Lyric = () => {
     showTran,
     showRoma,
   } = useSelector(selectLyricSettings);
- 
 
+  const {songLyric,  playSong, lyricIndex, currentSeek} = useSelector((state: any) => state.state);
+ 
   const isHasYrc = songLyric.yrcData.length > 0;
 
   const isHasLrc = songLyric.lrcData.length > 0 && playSong.type !== "radio";
 
   const [lrcMouseStatus, setLrcMouseStatus] = useState(false);
-  const [playSeek, setPlaySeek] = useState(0);
+  // const [playSeek, setPlaySeek] = useState(0);
   const lyricScrollRef = useRef<Scrollbars | null>(null);
 
   const currentTimeOffsetValue = currentTimeOffset > 0
@@ -79,9 +51,10 @@ const Lyric = () => {
     : currentTimeOffset;
 
   const updatePlaySeek = () => {
-    setPlaySeek(player.getSeek() + currentTimeOffset);
+    //setPlaySeek(newPlayer.getSeek() as number);
   };
 
+  
   useEffect(() => {
     const interval = setInterval(updatePlaySeek, 1000); // Update seek every second
     return () => clearInterval(interval);
@@ -113,22 +86,22 @@ const Lyric = () => {
       }
       if (
         !playLoading &&
-        wordData.time + wordData.duration - playSeek > 0
+        wordData.time + wordData.duration - currentSeek > 0
       ) {
         return {
           transitionDuration: `0s, 0s, 0.35s`,
           transitionDelay: `0ms`,
-          WebkitMaskPositionX: `${100 - Math.max(((playSeek - wordData.time) / wordData.duration) * 100, 0)}%`,
+          WebkitMaskPositionX: `${100 - Math.max(((currentSeek - wordData.time) / wordData.duration) * 100, 0)}%`,
         };
       }
       return {
         transitionDuration: `${wordData.duration}ms, ${wordData.duration * 0.8}ms, 0.35s`,
-        transitionDelay: `${wordData.time - playSeek}ms, ${
-          wordData.time - playSeek + wordData.duration * 0.5
+        transitionDelay: `${wordData.time - currentSeek}ms, ${
+          wordData.time - currentSeek + wordData.duration * 0.5
         }ms, 0ms`,
       };
     } else {
-      if (lyricIndex !== lyricIndex || (!playLoading && wordData.time >= playSeek)) {
+      if (lyricIndex !== lyricIndex || (!playLoading && wordData.time >= currentSeek)) {
         return { opacity: 0 };
       }
       return { opacity: 1 };
@@ -138,8 +111,8 @@ const Lyric = () => {
   const jumpSeek = (time: number) => {
     if (!time) return;
     setLrcMouseStatus(false);
-    player.setSeek(time);
-    player.play();
+    newPlayer.setSeek(time);
+    newPlayer.play();
   };
 
   const handleMouseEnter = () => {
@@ -192,7 +165,6 @@ const Lyric = () => {
         ref={lyricScrollRef}>
         {showYrc && isHasYrc ? (
           songLyric.yrcData.map((item: any, index: number) => (
-            
             <div 
               key={index}
               id={`lrc-${index}`} 
@@ -211,7 +183,7 @@ const Lyric = () => {
                       <span
                         key={textIndex}
                         className={`content-text ${
-                          text.duration >= 1.5 && playSeek <= text.endTime ? "content-long" : ""} 
+                          text.duration >= 1.5 && currentSeek <= text.endTime ? "content-long" : ""} 
                           ${text.endsWithSpace && 'end-with-space'}
                           `}
                       >

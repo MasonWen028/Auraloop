@@ -3,14 +3,18 @@ import {
   setPlaySong, 
   setPlayState, 
   setPlayFmList,
+  setLyricIndex,
+  setSongLyric,
 } from "@/stores/slices/stateSlice";
 import { SongType } from "@/types/main";
 import { Howl, Howler } from "howler";
 import { personalFm } from "@/api/rec";
 import store from "@/stores";
 import { message } from "antd"; // Import for error messages
-import { songUrl, unlockSongUrl } from "@/api/song"; // APIs to fetch song URLs
+import { songLyric, songUrl, unlockSongUrl } from "@/api/song"; // APIs to fetch song URLs
 import { isElectron } from "@/utils/platformDetector"; // Check for Electron environment
+import { parsedLyricsData, resetSongLyric } from "./lyric";
+import { setCurrentState } from "@/stores/slices/stateSlice";
 
 class NewPlayer {
   private player: Howl | null = null;
@@ -18,6 +22,8 @@ class NewPlayer {
   private isPaused: boolean = false;
 
   private volume: number = store.getState().state.playVolume;
+
+  private lyricsInterval: NodeJS.Timeout | null = null;
 
   constructor() {
     Howler.unload(); // Ensure the previous player instance is unloaded
@@ -63,6 +69,8 @@ class NewPlayer {
 
     const song = playFmList[playFmIndex];
 
+    console.log('[SONG]', song);
+
     // Fetch the correct playable URL
     const url = await this.getPlayableUrl(song);
     if (!url) {
@@ -72,6 +80,8 @@ class NewPlayer {
 
     // Set the current FM song in the state
     store.dispatch(setPlaySong(song));
+
+    await this.getLyricData(song.id);
 
     // Create the Howl player and start playback
     await this.createPlayer(url, autoPlay);
@@ -83,6 +93,8 @@ class NewPlayer {
   async nextFmSong() {
     const state = store.getState().state;
     const { playFmList, playFmIndex } = state;
+
+    console.log(playFmList);
 
     if (playFmIndex < playFmList.length - 1) {
       store.dispatch(setPlayFmIndex(playFmIndex + 1));
@@ -151,24 +163,85 @@ class NewPlayer {
       html5: true, // Ensures proper playback on mobile and web
       onend: () => {
         // Automatically move to the next song when the current one ends
+        this.stopLyricsUpdate();
         this.nextFmSong();
       },
       onplay: () => {
         console.log("▶️ Playing:", url);
         store.dispatch(setPlayState(1)); // Set play state to "playing"
+        this.startLyricsUpdate();
       },
       onpause: () => {
         console.log("⏸️ Paused:", url);
         store.dispatch(setPlayState(2)); // Set play state to "paused"
+        this.stopLyricsUpdate();
       },
       onload: () => {
         console.log("🔄 Song loaded:", url);
       },
       onloaderror: (id, err) => {
         console.error("❌ Load error:", err);
+        this.stopLyricsUpdate();
         this.nextFmSong(); // Move to the next song on error
       },
     });
+  }
+
+  /**
+   * Start real-time lyrics update.
+   */
+  private startLyricsUpdate() {
+    this.stopLyricsUpdate(); // Ensure no duplicate intervals
+
+    this.lyricsInterval = setInterval(() => {
+      if (!this.player) return;
+
+      this.updateLyrics(); // Update lyrics based on time
+    }, 250); // Update every 250ms
+  }
+
+  /**
+   * Update lyrics based on the current time.
+   */
+  private updateLyrics() {
+    const { songLyric, currentTimeOffset } = store.getState().state;
+    const { showYrc } = store.getState().setting;
+
+    if (songLyric.lrcAMData.length === 0 && songLyric.lrcData.length===0 && songLyric.yrcAMData.length === 0 && songLyric.yrcData.length === 0) return;
+
+    const hasYrc = !songLyric.yrcData.length || !showYrc;
+    const lyrics = hasYrc ? songLyric.lrcData : songLyric.yrcData;
+
+    if (!this.player) return;
+
+    const currentTime = this.player.seek();
+    const duration = this.player.duration();
+    const progress = calculateProgress(currentTime, duration);
+    const index = lyrics?.findIndex((v) => v?.time >= currentTime + currentTimeOffset && currentTime + currentTimeOffset < v?.endTime);
+    const lyricIndex = index === -1 ? lyrics.length - 1 : index - 1;
+    store.dispatch(setCurrentState({currentSeek: currentTime, progress: progress,lyricIndex}));
+  }
+
+
+  private async getLyricData(id: number) {
+    if (!id) {
+      resetSongLyric();
+      return;
+    }
+    const lyricRes = await songLyric(id);
+    parsedLyricsData(lyricRes);
+  }
+
+
+
+  /**
+   * Stop real-time lyrics update.
+   */
+  private stopLyricsUpdate() {
+    if (this.lyricsInterval) {
+      clearInterval(this.lyricsInterval);
+      this.lyricsInterval = null;
+    }
   }
 
   /**
@@ -214,9 +287,27 @@ class NewPlayer {
 
     this.player.volume(this.volume);    
     this.player.play();
-    store.dispatch(setPlayState(1)); // Set Redux state to "playing"
+    store.dispatch(setPlayState(1)); // Set Redux state to "playing"    
   }
 
+  getSeek() {
+    if (!this.player) return 0;
+
+    return this.player.seek();
+  }
+
+  playNext() {
+    const { playMode } = store.getState().state;
+    if (playMode === 0) {
+      this.nextFmSong();
+    }
+  }
+
+  setSeek(time: number) {
+    if (!this.player) return;
+
+    this.player.seek(time);
+  }
   /**
    * Pause playback while keeping the current song.
    */
@@ -226,6 +317,9 @@ class NewPlayer {
     this.isPaused = true; // Mark as paused
     this.player.pause();
     store.dispatch(setPlayState(2)); // Set Redux state to "paused"
+
+    this.stopLyricsUpdate();
+
   }
 
   /**
@@ -237,8 +331,23 @@ class NewPlayer {
     this.isPaused = false; // Reset paused state
     this.player.stop();
     store.dispatch(setPlayState(0)); // Set Redux state to "stopped"
+    
+    this.stopLyricsUpdate();
   }
   
 }
+
+/**
+ * 计算进度条移动的距离
+ * @param {number} currentTime
+ * @param {number} duration
+ * @returns {number} 进度条移动的距离，精确到 0.01，最大为 100
+ */
+export const calculateProgress = (currentTime: number, duration: number): number => {
+  if (duration === 0) return 0;
+
+  const progress = (currentTime / duration) * 100;
+  return Math.min(Math.round(progress * 100) / 100, 100);
+};
 
 export default new NewPlayer();

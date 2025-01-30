@@ -1,4 +1,5 @@
-import { SongType } from "@/types/main";
+import { LyricType, SongType } from "@/types/main";
+import type { LyricLine } from "@applemusic-like-lyrics/core";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import localforage from "localforage";
 import { isString } from "lodash";
@@ -20,6 +21,16 @@ interface State {
   playFmIndex: number;
   playVolume: number;
   playerMuted: boolean;
+  songLyric: {
+    lrcData: LyricType[];
+    yrcData: LyricType[];
+    lrcAMData: LyricLine[];
+    yrcAMData: LyricLine[];
+  };
+  currentTimeOffset: number;
+  lyricIndex: number;
+  currentSeek: number;
+  propgress: number;
 }
 
 const stateDB = localforage.createInstance({
@@ -51,30 +62,34 @@ let initialState:State = {
   playFmIndex: 0,
   playIndex: 0,
   playVolume: 0.7,
-  playerMuted: false
+  playerMuted: false,
+  songLyric: {
+    lrcData: [],
+    yrcData: [],
+    lrcAMData: [],
+    yrcAMData: [],
+  },
+  currentTimeOffset: 0,
+  lyricIndex: 0,
+  currentSeek: 0,
+  propgress: 0
 }
 
 async function loadDefaultState() {
   try {
     const stateDataKeys = await stateDB.keys();
-    const stateDataList: Record<string, any> = {};
+    const stateDataList: Partial<State> = {};
 
     await Promise.all(
       stateDataKeys.map(async (key) => {
         const data = await stateDB.getItem(key);
         if (data) {
-          stateDataList[key] = data;
+          (stateDataList as any)[key] = data;
         }
       })
     );
 
-    if (stateDataList.playSong) {
-      initialState.playSong = stateDataList.playSong;
-    }
-
-    if (stateDataList.repeatModel) {
-      initialState.repeatModel = stateDataList.repeatModel;
-    }
+    initialState = {...initialState, ...stateDataList}
   } catch (error) {
     console.error("Error loading data from userDB:", error);
   }
@@ -110,24 +125,28 @@ const stateSlice = createSlice({
         song.cover = GetCover(song);
       })
       state.playFmList = action.payload;
+      stateDB.setItem("playFmList", action.payload);
     },
     setPlayList(state, action: PayloadAction<SongType[]>) {
       action.payload.map((song: SongType) => {
         song.cover = GetCover(song);
       })
       state.playList = action.payload;
+      stateDB.setItem("playList", action.payload);
     },
     setPlayIndex(state, action: PayloadAction<number>) {
       if(action.payload > state.playList?.length - 1) {
         action.payload = 0;
       }
       state.playIndex = action.payload;
+      stateDB.setItem("playIndex", action.payload);
     },
     setPlayFmIndex(state, action: PayloadAction<number>) {
       if(action.payload > state.playFmList?.length - 1) {
         action.payload = 0;
       }
       state.playFmIndex = action.payload;
+      stateDB.setItem("playFmIndex", action.payload);
     },
     setPlayVolume(state, action: PayloadAction<number>) {
       state.playVolume = action.payload;
@@ -135,7 +154,32 @@ const stateSlice = createSlice({
     },
     setPlayerMuted(state, action: PayloadAction<boolean>) {
       state.playerMuted = action.payload;
+      stateDB.setItem("playerMuted", action.payload);
+    },
+    setSongLyric(state, action: PayloadAction<{
+      lrcData: LyricType[];
+      yrcData: LyricType[];
+      lrcAMData: LyricLine[];
+      yrcAMData: LyricLine[];
+    }>) {
+      state.songLyric = action.payload;
+      stateDB.setItem("songLyric", action.payload);
+    },
+    setLyricIndex(state, action: PayloadAction<number>) {
+      state.lyricIndex = action.payload;
+    },
+    setCurrentTimeOffset(state, action: PayloadAction<number>) {
+      state.currentTimeOffset = action.payload;
+    },
+    setCurrentSeek(state, action: PayloadAction<number>) {
+      state.currentSeek = action.payload;
+    },
+    setCurrentState(state, action: PayloadAction<{currentSeek: number, progress: number, lyricIndex: number}>) {
+      state.currentSeek = action.payload.currentSeek;
+      state.lyricIndex = action.payload.lyricIndex;
+      state.propgress = action.payload.progress;
     }
+
   }
 })
 
@@ -158,6 +202,10 @@ const GetCover = (song: SongType) => {
 }
 
 export const {
+  setCurrentState,
+  setCurrentSeek,
+  setLyricIndex,
+  setCurrentTimeOffset,
   setPlayFmList,
   setPlayList,
   setPlayIndex,
@@ -168,7 +216,8 @@ export const {
   setRepeatModel,
   setPlayMode,
   setPlayVolume,
-  setPlayerMuted
+  setPlayerMuted,
+  setSongLyric
 } = stateSlice.actions;
 
 export default stateSlice.reducer;

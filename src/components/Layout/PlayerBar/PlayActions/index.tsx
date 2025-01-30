@@ -45,6 +45,7 @@ const PlayActions: React.FC =() => {
 
   const handlePlayerNext = () => {
     //player.nextOrPrev("next", true);
+    newPlayer.playNext();
   }
 
 
