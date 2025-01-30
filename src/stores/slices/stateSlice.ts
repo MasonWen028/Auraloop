@@ -178,8 +178,18 @@ const stateSlice = createSlice({
       state.currentSeek = action.payload.currentSeek;
       state.lyricIndex = action.payload.lyricIndex;
       state.propgress = action.payload.progress;
+    },
+    resetLyricState(state) {
+      state.currentSeek = 0;
+      state.lyricIndex = 0;
+      state.propgress = 0;
+      state.songLyric = {
+        lrcData: [],
+        yrcData: [],
+        lrcAMData: [],
+        yrcAMData: [],
+      }
     }
-
   }
 })
 
@@ -202,6 +212,7 @@ const GetCover = (song: SongType) => {
 }
 
 export const {
+  resetLyricState,
   setCurrentState,
   setCurrentSeek,
   setLyricIndex,

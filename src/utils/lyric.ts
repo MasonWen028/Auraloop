@@ -3,7 +3,7 @@ import type { LyricType } from "@/types/main";
 import { msToS } from "./time";
 import store from "@/stores";
 // import { setSongLyric } from "@/stores/slices/musicSlice";
-import { setSongLyric } from "@/stores/slices/stateSlice";
+import { resetLyricState, setSongLyric } from "@/stores/slices/stateSlice";
 
 // 歌词排除内容
 const getExcludeKeywords = () => {
@@ -13,12 +13,7 @@ const getExcludeKeywords = () => {
 
 // 恢复默认
 export const resetSongLyric = () => {
-  store.dispatch(setSongLyric({
-    lrcData: [],
-    lrcAMData: [],
-    yrcData: [],
-    yrcAMData: [],
-  }));
+  store.dispatch(resetLyricState());
 };
 
 // 解析歌词数据
