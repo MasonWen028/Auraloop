@@ -14,3 +14,7 @@
 .music-drawer .ant-drawer-body {
   padding-top: 0;
 }
+
+.music-drawer .ant-drawer-body {
+  padding: 0;
+}

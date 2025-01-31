@@ -5,14 +5,17 @@ import { useEffect, useRef, useState } from 'react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PlayingImage from '@/components/PlayingImage';
+import { SongType } from '@/types/main';
 
+interface MusicDrawerItemPorps {
+  song: SongType;
+  onClick: (id: number) => void;
+  playState: 0 | 1 | 2
+}
 
-const MusicDrawerItem = () => {
+const MusicDrawerItem: React.FC<MusicDrawerItemPorps> = ({song, onClick, playState}) => {
 
-  const { playSong, playFmList, playList, playMode } = useSelector((state: any) => state.state);
-  const { id, name, artists, album, cover } = playSong;
-
-  const [musicItems] = useState(playMode===0? playFmList: playList);
+  const { name, artists, cover } = song;
 
   const [isScrollable, setIsScrollable] = useState(false);
   const songNameRef = useRef<HTMLDivElement>(null);
@@ -25,10 +28,17 @@ const MusicDrawerItem = () => {
     }
   }, [name]);
 
+  //// 0 for stopping 1 for playing 2 for pause 3 for loading
+  
+
+  const handleClick = () => {
+    onClick(song.id);
+  }
+
   return (
-    <div className="music-item">
-      <PlayingImage imageSrc={cover} playState={2} className='album-cover'/>
-      <div className="song-info">
+    <div onClick={handleClick} className="music-item" style={{padding: '10px 24px'}}>
+      <PlayingImage imageSrc={cover} playState={playState} className='album-cover'/>
+      <div className="song-info" style={{flex: 1}}>
         <div
           className={`song-name ${isScrollable ? '' : 'no-scroll'}`}
           ref={songNameRef}

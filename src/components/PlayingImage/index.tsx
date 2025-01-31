@@ -4,7 +4,7 @@ import './index.css';
 
 interface PlayingImageProps {
   imageSrc: string; // Source of the image
-  playState: 0| 1 | 2; // 0 for no state, 1 for playing 2 for pausing
+  playState: 0| 1 | 2 | 3; // 0 for no state, 1 for playing 2 for pausing
   className?: string;
   onClick?: () => void;
 }
@@ -16,6 +16,11 @@ const PlayingImage: React.FC<PlayingImageProps> = ({ imageSrc, playState, classN
       className={`playing-image-container ${className}`}
     >
       <img style={{width: '100%', height: '100%'}} src={imageSrc} alt="playingable"/>
+      {playState === 0 || playState === 3 && (
+        <div className="playing-icon">
+          
+        </div>
+      )}
       {playState === 1 && (
         <div className="playing-icon">
           <Playing style={{fontSize: 30}}/>
