@@ -76,7 +76,6 @@ async function loadUserData() {
     if (userDataList.userLikeData) {
       initialState = {...initialState, userLikeData: userDataList.userLikeData as any}
     }
-    console.log("[DATA ON DB]", initialState);
   } catch (error) {
     console.error("Error loading data from userDB:", error);
   }

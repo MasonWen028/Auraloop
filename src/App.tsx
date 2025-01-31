@@ -12,15 +12,9 @@ import Artist from './pages/Artist'
 import ArtistSongs from './pages/ArtistSongs'
 import Album from './pages/Album'
 import UserProfile from './pages/UserProfile'
-import { StrictMode, useEffect } from 'react'
-import player from './utils/player'
+import { StrictMode } from 'react'
 
 function App() {
-useEffect(() => {
-  player.initPlayer();
-}, []);
-
-console.log("[FIRST LAYER]");
 
   return (
     <StrictMode>

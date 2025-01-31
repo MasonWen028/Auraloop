@@ -4,12 +4,15 @@ import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PlayingImage from '@/components/PlayingImage';
 
 
 const MusicDrawerItem = () => {
 
-  const { playSong } = useSelector((state: any) => state.state);
+  const { playSong, playFmList, playList, playMode } = useSelector((state: any) => state.state);
   const { id, name, artists, album, cover } = playSong;
+
+  const [musicItems] = useState(playMode===0? playFmList: playList);
 
   const [isScrollable, setIsScrollable] = useState(false);
   const songNameRef = useRef<HTMLDivElement>(null);
@@ -24,7 +27,7 @@ const MusicDrawerItem = () => {
 
   return (
     <div className="music-item">
-      <HoverImage imageSrc={cover} route={`/`} className='album-cover'/>
+      <PlayingImage imageSrc={cover} playState={2} className='album-cover'/>
       <div className="song-info">
         <div
           className={`song-name ${isScrollable ? '' : 'no-scroll'}`}

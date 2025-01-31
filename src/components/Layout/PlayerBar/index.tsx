@@ -5,50 +5,12 @@ import SongActions from "./PlayerActions";
 import PlayActions from "./PlayActions";
 import MusicItem from "./MusicItem";
 import { SongType } from "@/types/main";
-import { personalFm } from "@/api/rec";
-import { setPlayFmIndex, setPlayFmList, setPlaySong } from "@/stores/slices/stateSlice";
 import PlayerSlider from "./PlayerSlider";
 
 const PlayerBar: React.FC = () => {
-  const { playBar } = useSelector((state: any) => state.color.value)
-  // const { showSongInfo } = useSelector((state: any) => state.status);
-  const { playMode } = useSelector((state: any) => state.state);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (playMode === 0) {
-      initialFm();
-    }
-  },[playMode]);
-
-  const initialFm = async() => {
-    var res = await personalFm();
-    dispatch(setPlayFmList(res.data));
-    dispatch(setPlayFmIndex(0));
-    dispatch(setPlaySong(res.data[0]));
-
-    console.log('[INITIALIZING]');
-  };
+  const { playBar } = useSelector((state: any) => state.color.value) 
 
   const [favoriteSongIds, setFavoriteSongIds] = useState<number[]>([]);
-
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(69);
-  const duration = 282;
-
-  const togglePlayPause = () => setIsPlaying(!isPlaying);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
-    const secs = (seconds % 60).toString().padStart(2, "0");
-    return `${mins}:${secs}`;
-  };
-
-  const handleSeek = (value: number) => {
-    setCurrentTime(value);
-  };
 
   const styles = {
     container: {

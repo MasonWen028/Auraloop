@@ -25,7 +25,6 @@ const PlayerSlider: React.FC = () => {
 
   const { duration, currentSeek, chorusDot } = useSelector((state: any) => state.state);
 
-  console.log('[CURRENT SEEK]', currentSeek);
   const [sliderValue, setSliderValue] = useState(currentSeek);
  
   const [isHovered, setIsHovered] = useState(false);
@@ -86,8 +85,6 @@ const PlayerSlider: React.FC = () => {
     setTooltipPosition(tooltipX);
     setTooltipTime(formattedTime);
   };
-
-  console.log(chorusDot);
 
   return (
     <div

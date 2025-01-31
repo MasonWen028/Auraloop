@@ -1,40 +1,29 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./index.css";
-import { ArrowsAltOutlined } from "@ant-design/icons";
+import Playing from "../SvgIcon/Playing";
+import Pausing from "../SvgIcon/Pausing";
+import './index.css';
 
-interface HoverImageProps {
+interface PlayingImageProps {
   imageSrc: string; // Source of the image
-  route: string; // Route to navigate to
+  playState: 0| 1 | 2; // 0 for no state, 1 for playing 2 for pausing
   className?: string;
+  onClick?: () => void;
 }
 
-const PlayingImage: React.FC<HoverImageProps> = ({ imageSrc, route, className }) => {
-  const [isHovered, setIsHovered] = useState(true);
-  const navigate = useNavigate();
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
-
-  const handleClick = () => {
-    navigate(route, { replace: true });
-  };
-
+const PlayingImage: React.FC<PlayingImageProps> = ({ imageSrc, playState, className,onClick }) => {
+  
   return (
-    <div
-      className={`hover-image-container ${className}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+    <div onClick={onClick}
+      className={`playing-image-container ${className}`}
     >
-      <img style={{width: '100%', height: '100%'}} src={imageSrc} alt="Hoverable"/>
-      {isHovered && (
-        <div className="hover-icon" onClick={handleClick}>
-          <ArrowsAltOutlined style={{fontSize: 30}}/>
+      <img style={{width: '100%', height: '100%'}} src={imageSrc} alt="playingable"/>
+      {playState === 1 && (
+        <div className="playing-icon">
+          <Playing style={{fontSize: 30}}/>
+        </div>
+      )}
+      {playState === 2 && (
+        <div className="playing-icon">
+          <Pausing style={{fontSize: 30}}/>
         </div>
       )}
     </div>

@@ -9,16 +9,16 @@ type PlayModeType = 0 | 1 | 2; // 0 for personalFM 1 for playlist
 type RepeatType = "repeat" | "repeat-once" | "shuffle";
 type SortType = "default" | "name" | "date";
 
+const MAX_HISTORY_SIZE = 50;
+
 interface State {
   playState: PlayStateType; 
   playSong: SongType;
   repeatModel: RepeatType;
   nextSong: SongType;
   playMode: PlayModeType;
-  playFmList: SongType[];
   playList: SongType[];
   playIndex: number;
-  playFmIndex: number;
   playVolume: number;
   playerMuted: boolean;
   songLyric: {
@@ -61,9 +61,7 @@ let initialState:State = {
   repeatModel: "repeat",
   nextSong: defaultMusicData,
   playMode: 0,
-  playFmList: [],
   playList: [],
-  playFmIndex: 0,
   playIndex: 0,
   playVolume: 0.7,
   playerMuted: false,
@@ -113,6 +111,20 @@ const stateSlice = createSlice({
       state.playHistory = action.payload;
       stateDB.setItem("playHistory", action.payload);
     },
+    addPlayHistory(state, action: PayloadAction<SongType>) {
+      const newHistoryList = [...state.playHistory];
+      if (!newHistoryList.find(song => song.id === action.payload.id)) {
+        newHistoryList.push(action.payload);
+      }
+    
+      // Trim the history list if it exceeds the maximum size
+      if (newHistoryList.length > MAX_HISTORY_SIZE) {
+        newHistoryList.shift(); // Remove the oldest song
+      }
+    
+      state.playHistory = newHistoryList;
+      stateDB.setItem("playHistory", newHistoryList);
+    },
     setHistoryIndex(state, action: PayloadAction<number>) {
       state.historyIndex = action.payload;
       stateDB.setItem("historyIndex", action.payload);
@@ -138,19 +150,12 @@ const stateSlice = createSlice({
       state.playMode = action.payload;
       stateDB.setItem("playMode", action.payload);
     },
-    setPlayFmList(state, action: PayloadAction<SongType[]>) {
-      action.payload.map((song: SongType) => {
-        song.cover = GetCover(song);
-      })
-      state.playFmList = action.payload;
-      stateDB.setItem("playFmList", action.payload);
-    },
     setPlayList(state, action: PayloadAction<SongType[]>) {
-      action.payload.map((song: SongType) => {
-        song.cover = GetCover(song);
-      })
-      state.playList = action.payload;
-      stateDB.setItem("playList", action.payload);
+      state.playList = action.payload.map((song: SongType) => ({
+        ...song,
+        cover: GetCover(song),
+      }))
+      stateDB.setItem("playList", state.playList);
     },
     setPlayIndex(state, action: PayloadAction<number>) {
       if(action.payload > state.playList?.length - 1) {
@@ -158,13 +163,6 @@ const stateSlice = createSlice({
       }
       state.playIndex = action.payload;
       stateDB.setItem("playIndex", action.payload);
-    },
-    setPlayFmIndex(state, action: PayloadAction<number>) {
-      if(action.payload > state.playFmList?.length - 1) {
-        action.payload = 0;
-      }
-      state.playFmIndex = action.payload;
-      stateDB.setItem("playFmIndex", action.payload);
     },
     setPlayVolume(state, action: PayloadAction<number>) {
       state.playVolume = action.payload;
@@ -236,6 +234,7 @@ const GetCover = (song: SongType) => {
 }
 
 export const {
+  addPlayHistory,
   setChorusDots,
   setPlayHistory,
   setHistoryIndex,
@@ -244,10 +243,8 @@ export const {
   setCurrentSeek,
   setLyricIndex,
   setCurrentTimeOffset,
-  setPlayFmList,
   setPlayList,
   setPlayIndex,
-  setPlayFmIndex,
   setPlayState,
   setPlaySong,
   setNextSong,

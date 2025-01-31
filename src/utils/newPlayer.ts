@@ -1,13 +1,12 @@
-import { 
-  setPlayFmIndex, 
+import {
   setPlaySong, 
-  setPlayState, 
-  setPlayFmList,
-  setLyricIndex,
-  setSongLyric,
+  setPlayState,
   setHistoryIndex,
   setPlayIndex,
   setChorusDots,
+  setPlayList,
+  addPlayHistory,
+  setPlayMode,
 } from "@/stores/slices/stateSlice";
 import { SongType } from "@/types/main";
 import { Howl, Howler } from "howler";
@@ -50,65 +49,93 @@ class NewPlayer {
       }
     }
 
-  /**
-   * Start playing the FM list.
-   */
-  async playFm(autoPlay: boolean = true) {
-    const state = store.getState().state; // Access the Redux state
-    let { playFmList, playFmIndex } = state;
-
-    // If playFmList is empty, fetch a new FM list first
-    if (playFmList.length === 0) {
-      await this.loadPersonalFm();
-      playFmList = store.getState().state.playFmList; // Refresh the list
-      playFmIndex = 0; // Reset index after fetching new songs
+  async doPlay (autoPlay: boolean = false) {
+    let { playMode, playList, playIndex } = store.getState().state;
+    if (playMode === 0) {
+      if (playList.length === 0 || playIndex >= playList.length - 1) {
+        await this.loadPersonalFm();
+      }
     }
-
-    // Ensure index is valid
-    if (playFmIndex >= playFmList.length) {
-      console.error("Invalid playFmIndex. Resetting to 0.");
-      store.dispatch(setPlayFmIndex(0));
-    }
-
-    const song = playFmList[playFmIndex];
-
-    console.log('[SONG]', song);
-
-    // Fetch the correct playable URL
+    playList = store.getState().state.playList;
+    playIndex = store.getState().state.playIndex;
+    const song = playList[playIndex];
     const url = await this.getPlayableUrl(song);
     if (!url) {
       message.error(`该歌曲暂无音源，跳至下一首`);
-      return this.nextFmSong(); // Skip to the next song
+      return this.nextSong();
     }
 
-    // Set the current FM song in the state
-    store.dispatch(setPlaySong(song));
-
+    store.dispatch(setPlaySong(song));  
+    
+    await this.playSong(url, song, autoPlay);
+  }
+  
+  async playSong(url: string, song: SongType, autoPlay: boolean) {
     await this.getLyricData(song.id);
 
     await this.getChorus(song.id);
+
+    store.dispatch(addPlayHistory(song));
 
     // Create the Howl player and start playback
     await this.createPlayer(url, autoPlay);
   }
 
   /**
-   * Move to the next FM song.
+   * Start playing the FM list.
    */
-  async nextFmSong() {
-    const state = store.getState().state;
-  let { playFmList, playFmIndex } = state;
+  async playFm(autoPlay: boolean = true) {
+    const state = store.getState().state; // Access the Redux state
+    let { playList, playIndex } = state;
 
-  console.log(playFmList);
+    // If playFmList is empty, fetch a new FM list first
+    if (playList.length === 0) {
+      await this.loadPersonalFm();
+      playList = store.getState().state.playList; // Refresh the list
+      playIndex = 0; // Reset index after fetching new songs
+    }
 
-  if (playFmIndex < playFmList.length - 1) {
-    store.dispatch(setPlayFmIndex(playFmIndex + 1));
-  } else {
-    await this.loadPersonalFm(); // Load new FM songs if at the end
-    store.dispatch(setPlayFmIndex(0));
+    // Ensure index is valid
+    if (playIndex >= playList.length) {
+      console.error("Invalid playFmIndex. Resetting to 0.");
+      store.dispatch(setPlayIndex(0));
+    }
+
+    const song = playList[playIndex];
+
+    // Fetch the correct playable URL
+    const url = await this.getPlayableUrl(song);
+    if (!url) {
+      message.error(`该歌曲暂无音源，跳至下一首`);
+      return this.nextSong(); // Skip to the next song
+    }
+
+    // Set the current FM song in the state
+    store.dispatch(setPlaySong(song));  
+    
+    await this.playSong(url, song, autoPlay);
   }
 
-  await this.playFm();
+  
+
+  /**
+   * Move to the next song.
+   */
+  async nextSong() {
+    const state = store.getState().state;
+    let { playList, playIndex, playMode } = state;
+
+    if (playIndex < playList.length - 1) {
+      store.dispatch(setPlayIndex(playIndex + 1));
+    } else {
+      if (playMode === 1) {
+        store.dispatch(setPlayIndex(0));
+      }
+      if (playMode === 2) {
+        store.dispatch(setPlayMode(0))
+      }
+    }
+    await this.doPlay(true);
   }
 
   /**
@@ -150,40 +177,57 @@ class NewPlayer {
 
   async playPrev() {
     const state = store.getState().state;
-    let { playHistory, historyIndex, playMode, playFmList, playFmIndex, playList, playIndex } = state;
-  
-    if (playMode === 1) {
-      // **Case 1: Playlist Mode - Play Previous Song in Playlist**
-      if (playIndex > 0) {
-        store.dispatch(setPlayIndex(playIndex - 1));
-        return this.playFromPlaylist(playList[playIndex - 1]);
+    let { playHistory, playMode, playList, playIndex, playSong } = state;
+    if (playMode === 0 && playHistory.length > 1) {
+      store.dispatch(setPlayList(playHistory))
+      if (playSong.id === playHistory[playHistory.length -1].id) {
+        store.dispatch(setPlayIndex(playHistory.length - 2))
       } else {
-        console.log("Already at the first song in the playlist");
-        return;
+        store.dispatch(setPlayIndex(playHistory.length - 1))
+      }
+      store.dispatch(setPlayMode(2))
+    }
+    else {
+      if (playList.length - 1 > playIndex) {
+        store.dispatch(setPlayIndex(playIndex - 1))
+      } else {
+        store.dispatch(setPlayIndex(0))
       }
     }
+
+    this.doPlay(true);
+    // if (playMode === 1) {
+    //   // **Case 1: Playlist Mode - Play Previous Song in Playlist**
+    //   if (playIndex > 0) {
+    //     store.dispatch(setPlayIndex(playIndex - 1));
+    //     return this.playFromPlaylist(playList[playIndex - 1]);
+    //   } else {
+    //     console.log("Already at the first song in the playlist");
+    //     return;
+    //   }
+    // }
   
-    if (playMode === 0) {
-      // **Case 2: Personal FM Mode - Play from History**
-      if (historyIndex > 0) {
-        // Move back in history
-        const prevSong = playHistory[historyIndex - 1];
-        store.dispatch(setHistoryIndex(historyIndex - 1));
-        store.dispatch(setPlaySong(prevSong));
+    // if (playMode === 0) {
+    //   // **Case 2: Personal FM Mode - Play from History**
+    //   if (historyIndex > 0) {
+    //     // Move back in history
+    //     const prevSong = playHistory[historyIndex - 1];
+    //     store.dispatch(setHistoryIndex(historyIndex - 1));
+    //     store.dispatch(setPlaySong(prevSong));
   
-        const url = await this.getPlayableUrl(prevSong);
-        if (!url) {
-          this.playPrev(); 
-          return;
-        }  
-        await this.createPlayer(url, true);
-      } else {
-        // **Case 3: History Ended - Restart Personal FM**
-        console.log("History ended, restarting Personal FM");
-        store.dispatch(setHistoryIndex(-1));
-        await this.playFm();
-      }
-    }
+    //     const url = await this.getPlayableUrl(prevSong);
+    //     if (!url) {
+    //       this.playPrev(); 
+    //       return;
+    //     }  
+    //     await this.createPlayer(url, true);
+    //   } else {
+    //     // **Case 3: History Ended - Restart Personal FM**
+    //     console.log("History ended, restarting Personal FM");
+    //     store.dispatch(setHistoryIndex(-1));
+    //     await this.playFm();
+    //   }
+    // }
   
     console.log("No previous song available");
   }
@@ -196,9 +240,10 @@ class NewPlayer {
    */
   private async createPlayer(url: string, autoPlay: boolean) {
     if (this.player) {
-      this.player.unload(); // Unload the previous instance
+      this.player.unload();
     }
-    console.log(autoPlay);
+    console.log('[CREATE PLAYER]')
+    Howler.unload();
     this.player = new Howl({
       src: [url], // Use the fetched URL instead of `song.cover`
       autoplay: autoPlay,
@@ -208,7 +253,7 @@ class NewPlayer {
       onend: () => {
         // Automatically move to the next song when the current one ends
         this.stopLyricsUpdate();
-        this.nextFmSong();
+        this.nextSong();
       },
       onplay: () => {
         console.log("▶️ Playing:", url);
@@ -226,7 +271,7 @@ class NewPlayer {
       onloaderror: (id, err) => {
         console.error("❌ Load error:", err);
         this.stopLyricsUpdate();
-        this.nextFmSong(); // Move to the next song on error
+        this.nextSong(); // Move to the next song on error
       },
     });
   }
@@ -235,6 +280,7 @@ class NewPlayer {
    * Start real-time lyrics update.
    */
   private startLyricsUpdate() {
+    console.log('[UPDATING]');
     this.stopLyricsUpdate(); // Ensure no duplicate intervals
 
     this.lyricsInterval = setInterval(() => {
@@ -263,7 +309,6 @@ class NewPlayer {
     const progress = calculateProgress(currentTime, duration);
     const index = lyrics?.findIndex((v) => v?.time >= currentTime + currentTimeOffset);
     const lyricIndex = index === -1 ? lyrics.length - 1 : index - 1;
-    console.log('[BEFORE SET LYRIC INDEX]', lyricIndex);
     store.dispatch(setCurrentState({currentSeek: currentTime, progress: progress,lyricIndex, duration: duration}));
   }
 
@@ -312,10 +357,29 @@ class NewPlayer {
    */
   private async loadPersonalFm() {
     try {
-      const res = await personalFm(); // Call your personal FM API
+      console.log('[CALL PERSONAL FM API]')
+      const res = await personalFm();
       if (res.data?.length > 0) {
-        store.dispatch(setPlayFmList(res.data));
+        store.dispatch(setPlayList(res.data));
+        store.dispatch(setPlayIndex(0));
         console.log("🌐 Loaded new FM list:", res.data);
+      } else {
+        message.warning("Personal FM list is empty. Try again later.");
+      }
+    } catch (error) {
+      console.error("Failed to load personal FM:", error);
+      message.error("Failed to load FM songs.");
+    }
+  }
+
+  async initPersonnalFm() {
+    try {
+      const res = await personalFm();
+      if (res.data?.length > 0) {
+        store.dispatch(setPlayList(res.data));
+        store.dispatch(setPlaySong(res.data[0]))
+        store.dispatch(setPlayIndex(0));
+        this.doPlay();
       } else {
         message.warning("Personal FM list is empty. Try again later.");
       }
@@ -350,7 +414,7 @@ class NewPlayer {
 
     this.player.volume(this.volume);    
     this.player.play();
-    store.dispatch(setPlayState(1)); // Set Redux state to "playing"    
+    store.dispatch(setPlayState(1));
   }
 
   getSeek() {
@@ -361,24 +425,25 @@ class NewPlayer {
 
 
   playNext() {
-    const state = store.getState().state;
-    let { playMode, playList, playIndex } = state;
+    this.nextSong();
+    // const state = store.getState().state;
+    // let { playMode, playList, playIndex } = state;
 
-    if (playMode === 1) {
-      // **Case 1: Playlist Mode - Play Next Song in Playlist**
-      if (playIndex < playList.length - 1) {
-        store.dispatch(setPlayIndex(playIndex + 1));
-        return this.playFromPlaylist(playList[playIndex + 1]);
-      } else {
-        console.log("Reached end of playlist");
-        return;
-      }
-    }
+    // if (playMode === 1) {
+    //   // **Case 1: Playlist Mode - Play Next Song in Playlist**
+    //   if (playIndex < playList.length - 1) {
+    //     store.dispatch(setPlayIndex(playIndex + 1));
+    //     return this.playFromPlaylist(playList[playIndex + 1]);
+    //   } else {
+    //     console.log("Reached end of playlist");
+    //     return;
+    //   }
+    // }
 
-    if (playMode === 0) {
-      // **Case 2: Personal FM Mode - Play Next FM Song**
-      return this.nextFmSong();
-    }
+    // if (playMode === 0) {
+    //   // **Case 2: Personal FM Mode - Play Next FM Song**
+    //   return this.nextSong();
+    // }
   }
 
   setSeek(time: number) {

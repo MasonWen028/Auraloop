@@ -8,9 +8,9 @@ import { MetaData } from "@/types/main";
 import player from "@/utils/player";
 import Lyric from "@/components/Lyric";
 import { isString } from "lodash";
-import { setPersonalFmMode } from "@/stores/slices/statusSlice";
 import { setPlayMode } from "@/stores/slices/stateSlice";
 import newPlayer from "@/utils/newPlayer";
+import Loading from "@/components/Loading";
 
 interface SongProps {
   type: 0 | 1;
@@ -21,6 +21,17 @@ const Song: React.FC<SongProps> = ({type}) => {
   const dispatch = useDispatch();  
 
   const { playSong } = useSelector((state: any) => state.state);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+useEffect(() => {
+  const initialize = async () => {
+    console.log('[LOADING]');
+    await newPlayer.initPersonnalFm();
+    setIsLoading(false);
+  };
+  initialize();
+}, []);
 
   const GetCover = () => {
     let tempCover = playSong?.cover;
@@ -38,7 +49,6 @@ const Song: React.FC<SongProps> = ({type}) => {
   const getSongs = () => {
     if (type === 0) {
       dispatch(setPlayMode(0));
-      newPlayer.playFm(false);
     }
   }
 
@@ -69,41 +79,41 @@ const Song: React.FC<SongProps> = ({type}) => {
       {/* Left Part: Cover and Info */}
       <div className="content-left">
         <div className="song-artist">
-        <div className="player-cover cover">
-          <div className="s-image cover-img">
-            <img src={GetCover()} alt="image" style={{objectFit: 'cover'}} className="cover loaded"/>
+          <div className="player-cover cover">
+            <div className="s-image cover-img">
+              <img src={GetCover()} alt="image" style={{objectFit: 'cover'}} className="cover loaded"/>
+            </div>
           </div>
-        </div>
-        <div className="player-data cover">
-        <div
-          className="name"
-          ref={songNameRef}
-        >
-          <span className={`name-text text-hidden ${isScrollable ? '' : 'no-scroll'}`}>{playSong.name}</span>
-          <div>
-            {
-              Array.isArray(playSong.artists) ? playSong.artists.map((artist: MetaData, index: number) => (
-                <React.Fragment key={artist.id}>
-                  <Link
-                    className="artist-name"
-                    style={{ color: 'inherit' }}
-                    to={`/artist/${artist.id}`}
-                  >
-                    {artist.name}
-                  </Link>
-                  {index < artists.length - 1 && ', '}
-                </React.Fragment>
-              )):<span>{playSong.artists}</span>
-            }
+          <div className="player-data cover">
+          <div
+            className="name"
+            ref={songNameRef}
+          >
+            <span className={`name-text text-hidden ${isScrollable ? '' : 'no-scroll'}`}>{playSong.name}</span>
+            <div>
+              {
+                Array.isArray(playSong.artists) ? playSong.artists.map((artist: MetaData, index: number) => (
+                  <React.Fragment key={artist.id}>
+                    <Link
+                      className="artist-name"
+                      style={{ color: 'inherit' }}
+                      to={`/artist/${artist.id}`}
+                    >
+                      {artist.name}
+                    </Link>
+                    {index < artists.length - 1 && ', '}
+                  </React.Fragment>
+                )):<span>{playSong.artists}</span>
+              }
+            </div>
           </div>
-        </div>
-          <div className="like">
-            <LikeIt tipStyle={{fontSize: 10}} isLiked={false}>
-              1W+
-            </LikeIt>
+            <div className="like">
+              <LikeIt tipStyle={{fontSize: 10}} isLiked={false}>
+                1W+
+              </LikeIt>
+            </div>
           </div>
-        </div>
-        </div>
+          </div>
       </div>
       {/* Right Part: Lyrics */}
       <div className="content-right">

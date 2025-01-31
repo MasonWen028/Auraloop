@@ -75,7 +75,7 @@
 
 .full-player .player-content .content-left {
   flex: 1;
-  min-width: 50%;
+  min-width: 40%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -106,7 +106,7 @@
 }
 
 .full-player .player-content .content-right {
-  flex: 1;
+  flex: 6;
   height: 100%;
   max-width: 50%;
   display: flex;

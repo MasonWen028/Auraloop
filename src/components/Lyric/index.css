@@ -24,6 +24,7 @@
   height: 100% !important;
   max-height: 500px;
   max-width: 500px;
+  min-width: 300px;
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -61,7 +62,7 @@
   display: flex;
   flex-direction: column;
   margin: 6px 0;
-  padding: 10px 16px;
+  padding: 0px 16px;
   transform: scale(0.86);
   transform-origin: left center;
   transition: filter 0.35s, opacity 0.35s, transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);

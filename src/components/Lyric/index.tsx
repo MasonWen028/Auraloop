@@ -37,8 +37,6 @@ const Lyric = () => {
  
   const isHasYrc = songLyric.yrcData.length > 0;
 
-  console.log('[LYRIC INDEX]', lyricIndex);
-
   const isHasLrc = songLyric.lrcData.length > 0 && playSong.type !== "radio";
 
   const [lrcMouseStatus, setLrcMouseStatus] = useState(false);
