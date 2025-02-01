@@ -52,7 +52,7 @@ class NewPlayer {
   async doPlay (autoPlay: boolean = false) {
     let { playMode, playList, playIndex } = store.getState().state;
     if (playMode === 0) {
-      if (playList.length === 0 || playIndex >= playList.length - 1) {
+      if (playList.length === 0 || playIndex > playList.length - 1) {
         await this.loadPersonalFm();
       }
     }
@@ -123,9 +123,9 @@ class NewPlayer {
    */
   async nextSong() {
     const state = store.getState().state;
-    let { playList, playIndex, playMode } = state;
+    let { playList, playIndex, playMode } = state;    
 
-    if (playIndex < playList.length - 1) {
+    if (playMode === 0 || playIndex < playList.length - 1) {
       store.dispatch(setPlayIndex(playIndex + 1));
     } else {
       if (playMode === 1) {
@@ -172,6 +172,15 @@ class NewPlayer {
     } catch (error) {
       console.error("Error fetching song URL:", error);
       return null;
+    }
+  }
+
+  async playSpecificSong(id: number) {
+    const playList = store.getState().state.playList;
+    const index = playList.findIndex((s: SongType) => s.id === id);
+    if (index !== -1) {
+      store.dispatch(setPlayIndex(index));
+      this.doPlay(true);
     }
   }
 

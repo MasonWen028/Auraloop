@@ -12,18 +12,24 @@ import { useState } from "react";
 import MusicListDrawer from "../MusicListDrawer";
 
 const SongActions = () => {
- 
-  
+ const [musicListVisible, setMusicVisible] = useState(false);
+  const handleMusicListClose = () => {
+    setMusicVisible(false);
+  }
+
+  const handleMusicListVisible = () => {
+    setMusicVisible(!musicListVisible);
+  }
 
   return <>
-    <MusicListDrawer/>
+    <MusicListDrawer musciListVisible={musicListVisible} onClose={handleMusicListClose}/>
     <Space style={{flex: 1, justifyContent: 'end', justifyItems: 'end'}} size={"middle"} className="small-gap">
       <Share className="action-btn"/>
       <Dislike className="action-btn"/>
       <Lyric className="action-btn"/>
       <Cycle className="action-btn"/>
       <VolumeSlider/>
-      <MusicList className="action-btn"/>
+      <MusicList className="action-btn" onClick={handleMusicListVisible}/>
       <MoreAction/>
     </Space>
   </>

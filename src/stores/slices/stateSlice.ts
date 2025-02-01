@@ -158,9 +158,6 @@ const stateSlice = createSlice({
       stateDB.setItem("playList", state.playList);
     },
     setPlayIndex(state, action: PayloadAction<number>) {
-      if(action.payload > state.playList?.length - 1) {
-        action.payload = 0;
-      }
       state.playIndex = action.payload;
       stateDB.setItem("playIndex", action.payload);
     },
